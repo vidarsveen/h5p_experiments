@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Coordinate System - PCI Prototype</title>
+    <link rel="stylesheet" href="css/style.css">
+    <!-- p5.js from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <!-- math.js for safe expression evaluation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.1/math.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📐 Interactive Coordinate System</h1>
+            <p class="subtitle">Portable Custom Interaction Prototype</p>
+        </header>
+
+        <main>
+            <!-- Control Panel -->
+            <aside class="control-panel">
+                <h2>Configuration</h2>
+
+                <div class="config-section">
+                    <h3>Quick Examples</h3>
+                    <button class="example-btn" onclick="loadExample('basic')">Basic Point</button>
+                    <button class="example-btn" onclick="loadExample('function')">Function Plot</button>
+                    <button class="example-btn" onclick="loadExample('polygon')">Polygon</button>
+                    <button class="example-btn" onclick="loadExample('complete')">Complete Example</button>
+                </div>
+
+                <div class="config-section">
+                    <h3>JSON Configuration</h3>
+                    <textarea id="jsonConfig" rows="20" spellcheck="false"></textarea>
+                    <button class="btn-primary" onclick="applyConfig()">Apply Configuration</button>
+                    <button class="btn-secondary" onclick="resetSystem()">Reset</button>
+                </div>
+
+                <div class="config-section">
+                    <h3>Response Data</h3>
+                    <pre id="responseData">{}</pre>
+                </div>
+
+                <div class="config-section">
+                    <h3>Validation Result</h3>
+                    <div id="validationResult" class="validation-output">
+                        <p>No validation performed yet.</p>
+                    </div>
+                    <button class="btn-success" onclick="validateResponse()">Validate Response</button>
+                </div>
+            </aside>
+
+            <!-- Canvas Area -->
+            <section class="canvas-area">
+                <div class="canvas-header">
+                    <h2>Coordinate System</h2>
+                    <div class="canvas-controls">
+                        <button onclick="coordinateSystem.resetView()" title="Reset View">🔄</button>
+                        <button onclick="coordinateSystem.toggleGrid()" title="Toggle Grid">⊞</button>
+                        <button onclick="coordinateSystem.undo()" title="Undo">↶</button>
+                        <button onclick="coordinateSystem.redo()" title="Redo">↷</button>
+                    </div>
+                </div>
+                <div id="canvasContainer"></div>
+                <div class="canvas-info">
+                    <span id="mouseCoords">Mouse: (0, 0)</span>
+                    <span id="canvasStatus">Ready</span>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>Interactive Coordinate System PCI - Prototype v0.1</p>
+        </footer>
+    </div>
+
+    <!-- Core Coordinate System -->
+    <script src="js/CoordinateSystem.js"></script>
+    <!-- Example configurations -->
+    <script src="js/examples.js"></script>
+    <!-- Main app logic -->
+    <script src="js/app.js"></script>
+</body>
+</html>
