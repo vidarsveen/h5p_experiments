@@ -1,0 +1,383 @@
+{
+  "scoreShow": "Check",
+  "tryAgain": "Retry",
+  "scoreExplanation": "Correct answers give +1 point. Incorrect answers give 0 points.",
+  "question": {
+    "settings": {
+      "size": {
+        "width": 800,
+        "height": 600
+      },
+      "background": {
+        "path": "images/orbital-diagram.svg",
+        "mime": "image/svg+xml",
+        "copyright": {
+          "license": "U"
+        },
+        "width": 800,
+        "height": 600
+      }
+    },
+    "task": {
+      "library": "H5P.AdvancedText 1.1",
+      "params": {
+        "text": "<h2>Build the Electron Configuration for Oxygen (O)</h2><p>Oxygen has 8 electrons. Drag the electrons (represented by arrows) into the correct orbital boxes following the Aufbau principle, Hund's rule, and the Pauli exclusion principle.</p><ul><li><strong>Aufbau principle:</strong> Fill orbitals from lowest to highest energy</li><li><strong>Hund's rule:</strong> Fill each orbital in a subshell with one electron before pairing</li><li><strong>Pauli exclusion principle:</strong> Maximum 2 electrons per orbital with opposite spins</li></ul><p><em>Order: 1s → 2s → 2p → 3s → 3p</em></p>"
+      },
+      "subContentId": "ad051467-73cf-4f44-9d17-6b8e39c1fc20",
+      "metadata": {
+        "contentType": "Text",
+        "license": "U",
+        "title": "Untitled Text"
+      }
+    },
+    "elements": [
+      {
+        "x": 5,
+        "y": 5,
+        "width": 5,
+        "height": 5,
+        "dropZones": ["0"],
+        "type": {
+          "library": "H5P.AdvancedText 1.1",
+          "params": {
+            "text": "<div style='font-size: 24px; text-align: center;'>↑</div>"
+          },
+          "subContentId": "e1",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Electron spin up"
+          }
+        },
+        "backgroundOpacity": 100,
+        "multiple": false
+      },
+      {
+        "x": 12,
+        "y": 5,
+        "width": 5,
+        "height": 5,
+        "dropZones": ["1"],
+        "type": {
+          "library": "H5P.AdvancedText 1.1",
+          "params": {
+            "text": "<div style='font-size: 24px; text-align: center;'>↓</div>"
+          },
+          "subContentId": "e2",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Electron spin down"
+          }
+        },
+        "backgroundOpacity": 100,
+        "multiple": false
+      },
+      {
+        "x": 5,
+        "y": 12,
+        "width": 5,
+        "height": 5,
+        "dropZones": ["2"],
+        "type": {
+          "library": "H5P.AdvancedText 1.1",
+          "params": {
+            "text": "<div style='font-size: 24px; text-align: center;'>↑</div>"
+          },
+          "subContentId": "e3",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Electron spin up"
+          }
+        },
+        "backgroundOpacity": 100,
+        "multiple": false
+      },
+      {
+        "x": 12,
+        "y": 12,
+        "width": 5,
+        "height": 5,
+        "dropZones": ["3"],
+        "type": {
+          "library": "H5P.AdvancedText 1.1",
+          "params": {
+            "text": "<div style='font-size: 24px; text-align: center;'>↓</div>"
+          },
+          "subContentId": "e4",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Electron spin down"
+          }
+        },
+        "backgroundOpacity": 100,
+        "multiple": false
+      },
+      {
+        "x": 5,
+        "y": 19,
+        "width": 5,
+        "height": 5,
+        "dropZones": ["4"],
+        "type": {
+          "library": "H5P.AdvancedText 1.1",
+          "params": {
+            "text": "<div style='font-size: 24px; text-align: center;'>↑</div>"
+          },
+          "subContentId": "e5",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Electron spin up"
+          }
+        },
+        "backgroundOpacity": 100,
+        "multiple": false
+      },
+      {
+        "x": 12,
+        "y": 19,
+        "width": 5,
+        "height": 5,
+        "dropZones": ["5"],
+        "type": {
+          "library": "H5P.AdvancedText 1.1",
+          "params": {
+            "text": "<div style='font-size: 24px; text-align: center;'>↑</div>"
+          },
+          "subContentId": "e6",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Electron spin up"
+          }
+        },
+        "backgroundOpacity": 100,
+        "multiple": false
+      },
+      {
+        "x": 5,
+        "y": 26,
+        "width": 5,
+        "height": 5,
+        "dropZones": ["6"],
+        "type": {
+          "library": "H5P.AdvancedText 1.1",
+          "params": {
+            "text": "<div style='font-size: 24px; text-align: center;'>↑</div>"
+          },
+          "subContentId": "e7",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Electron spin up"
+          }
+        },
+        "backgroundOpacity": 100,
+        "multiple": false
+      },
+      {
+        "x": 12,
+        "y": 26,
+        "width": 5,
+        "height": 5,
+        "dropZones": ["7"],
+        "type": {
+          "library": "H5P.AdvancedText 1.1",
+          "params": {
+            "text": "<div style='font-size: 24px; text-align: center;'>↓</div>"
+          },
+          "subContentId": "e8",
+          "metadata": {
+            "contentType": "Text",
+            "license": "U",
+            "title": "Electron spin down"
+          }
+        },
+        "backgroundOpacity": 100,
+        "multiple": false
+      }
+    ],
+    "dropZones": [
+      {
+        "x": 30,
+        "y": 45,
+        "width": 10,
+        "height": 8,
+        "correctElements": ["0"],
+        "showLabel": true,
+        "backgroundOpacity": 80,
+        "tipsAndFeedback": {
+          "tip": "This is the 1s orbital - it should be filled first with a spin-up electron"
+        },
+        "single": true,
+        "autoAlign": true,
+        "label": "<div>1s ↑</div>"
+      },
+      {
+        "x": 42,
+        "y": 45,
+        "width": 10,
+        "height": 8,
+        "correctElements": ["1"],
+        "showLabel": true,
+        "backgroundOpacity": 80,
+        "tipsAndFeedback": {
+          "tip": "This is the 1s orbital - the second electron has opposite spin (spin-down)"
+        },
+        "single": true,
+        "autoAlign": true,
+        "label": "<div>1s ↓</div>"
+      },
+      {
+        "x": 30,
+        "y": 58,
+        "width": 10,
+        "height": 8,
+        "correctElements": ["2"],
+        "showLabel": true,
+        "backgroundOpacity": 80,
+        "tipsAndFeedback": {
+          "tip": "The 2s orbital fills next, starting with spin-up"
+        },
+        "single": true,
+        "autoAlign": true,
+        "label": "<div>2s ↑</div>"
+      },
+      {
+        "x": 42,
+        "y": 58,
+        "width": 10,
+        "height": 8,
+        "correctElements": ["3"],
+        "showLabel": true,
+        "backgroundOpacity": 80,
+        "tipsAndFeedback": {
+          "tip": "The 2s orbital second electron has opposite spin"
+        },
+        "single": true,
+        "autoAlign": true,
+        "label": "<div>2s ↓</div>"
+      },
+      {
+        "x": 30,
+        "y": 71,
+        "width": 10,
+        "height": 8,
+        "correctElements": ["4"],
+        "showLabel": true,
+        "backgroundOpacity": 80,
+        "tipsAndFeedback": {
+          "tip": "First 2p orbital - by Hund's rule, place one electron in each p orbital before pairing"
+        },
+        "single": true,
+        "autoAlign": true,
+        "label": "<div>2p ↑</div>"
+      },
+      {
+        "x": 42,
+        "y": 71,
+        "width": 10,
+        "height": 8,
+        "correctElements": ["5"],
+        "showLabel": true,
+        "backgroundOpacity": 80,
+        "tipsAndFeedback": {
+          "tip": "Second 2p orbital - Hund's rule says fill with parallel spins first"
+        },
+        "single": true,
+        "autoAlign": true,
+        "label": "<div>2p ↑</div>"
+      },
+      {
+        "x": 54,
+        "y": 71,
+        "width": 10,
+        "height": 8,
+        "correctElements": ["6"],
+        "showLabel": true,
+        "backgroundOpacity": 80,
+        "tipsAndFeedback": {
+          "tip": "Third 2p orbital - continues parallel spin pattern"
+        },
+        "single": true,
+        "autoAlign": true,
+        "label": "<div>2p ↑</div>"
+      },
+      {
+        "x": 66,
+        "y": 71,
+        "width": 10,
+        "height": 8,
+        "correctElements": ["7"],
+        "showLabel": true,
+        "backgroundOpacity": 80,
+        "tipsAndFeedback": {
+          "tip": "The 8th electron pairs up in the first 2p orbital with opposite spin"
+        },
+        "single": true,
+        "autoAlign": true,
+        "label": "<div>2p ↓</div>"
+      }
+    ]
+  },
+  "overallFeedback": [
+    {
+      "from": 0,
+      "to": 49,
+      "feedback": "You need more practice with electron configuration. Review the Aufbau principle, Hund's rule, and Pauli exclusion principle. Try again!"
+    },
+    {
+      "from": 50,
+      "to": 74,
+      "feedback": "Good effort! You understand some of the principles, but there are still some errors. Check the order of orbital filling and spin pairing rules."
+    },
+    {
+      "from": 75,
+      "to": 99,
+      "feedback": "Very good! You've mostly mastered electron configuration. Double-check any remaining errors."
+    },
+    {
+      "from": 100,
+      "to": 100,
+      "feedback": "Perfect! You correctly applied the Aufbau principle, Hund's rule, and Pauli exclusion principle. Oxygen's electron configuration is 1s² 2s² 2p⁴."
+    }
+  ],
+  "behaviour": {
+    "enableRetry": true,
+    "enableSolutionsButton": true,
+    "enableCheckButton": true,
+    "instantFeedback": false,
+    "showSolutionsRequiresInput": true,
+    "dropZoneHighlighting": "dragging",
+    "autoAlignSpacing": 2,
+    "enableScoreExplanation": true,
+    "backgroundOpacity": 100,
+    "applyPenalties": false,
+    "singlePoint": false,
+    "showTitle": true
+  },
+  "l10n": {
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit fullscreen"
+  },
+  "confirmCheck": {
+    "header": "Finish?",
+    "body": "Are you sure you want to finish?",
+    "cancelLabel": "Cancel",
+    "confirmLabel": "Finish"
+  },
+  "confirmRetry": {
+    "header": "Retry?",
+    "body": "Are you sure you want to retry?",
+    "cancelLabel": "Cancel",
+    "confirmLabel": "Confirm"
+  },
+  "scoreBarLabel": "You got :num out of :total points",
+  "a11yCheck": "Check the answers. The responses will be marked as correct, incorrect, or unanswered.",
+  "a11yRetry": "Retry the task. Reset all responses and start the task over again.",
+  "a11yShowSolution": "Show the solution. The task will be marked with its correct solution.",
+  "a11yCheckingModeHeader": "Checking mode"
+}

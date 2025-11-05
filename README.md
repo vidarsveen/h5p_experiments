@@ -60,27 +60,33 @@ This project showcases the versatility of the H5P framework through 10+ interact
 
 ```
 h5p_experiments/
-├── README.md                          # This file
-├── H5P_DEMONSTRATION_PLAN.md         # Detailed implementation plan
-├── activities/                        # Individual H5P activities (to be created)
-│   ├── physics_projectile_motion/
-│   ├── chemistry_electron_config/
-│   ├── biology_cell_division/
-│   ├── math_calculus_fundamentals/
-│   ├── cs_algorithm_efficiency/
-│   ├── chemistry_functional_groups/
-│   ├── biology_cardiovascular/
-│   ├── physics_thermodynamics/
-│   ├── math_trig_identities/
-│   └── cs_programming_history/
-├── assets/                            # Shared media assets
+├── README.md                              # This file
+├── H5P_DEMONSTRATION_PLAN.md              # Detailed implementation plan
+├── electron-configuration.h5p             # ✓ Ready to use!
+├── activities/                            # Individual H5P activities
+│   ├── 01_chemistry_electron_config/      # ✓ COMPLETED
+│   │   ├── h5p.json
+│   │   ├── README.md
+│   │   ├── TESTING_GUIDE.md
+│   │   └── content/
+│   │       ├── content.json
+│   │       └── images/
+│   │           └── orbital-diagram.svg
+│   ├── 02_physics_projectile_motion/      # Planned
+│   ├── 03_biology_cell_division/          # Planned
+│   ├── 04_math_calculus_fundamentals/     # Planned
+│   ├── 05_cs_algorithm_efficiency/        # Planned
+│   ├── 06_chemistry_functional_groups/    # Planned
+│   ├── 07_biology_cardiovascular/         # Planned
+│   ├── 08_physics_thermodynamics/         # Planned
+│   ├── 09_math_trig_identities/           # Planned
+│   └── 10_cs_programming_history/         # Planned
+├── assets/                                # Shared media assets
 │   ├── images/
 │   ├── videos/
 │   └── audio/
-└── docs/                              # Additional documentation
-    ├── educator_guide.md
-    ├── technical_setup.md
-    └── assessment_rubrics.md
+└── docs/                                  # Additional documentation
+    └── technical_setup.md                 # ✓ Complete
 ```
 
 ## Getting Started
@@ -97,10 +103,31 @@ h5p_experiments/
 3. Follow the implementation plan for creating each activity
 4. Test and customize for your specific needs
 
+## Completed Activities
+
+### 1. Electron Configuration - Drag and Drop ✓
+**File**: `electron-configuration.h5p`
+**Subject**: Chemistry - Atomic Structure
+**Content Type**: H5P Drag Question
+
+Students build the electron configuration for Oxygen by dragging electrons into orbital diagrams while applying the Aufbau principle, Hund's rule, and Pauli exclusion principle.
+
+**Features**:
+- 8 draggable electrons with spin notation
+- 8 drop zones for 1s, 2s, and 2p orbitals
+- Immediate feedback with explanations
+- Hints for each orbital
+- Retry and show solution options
+- Differentiated feedback based on score
+
+**Documentation**: See `activities/01_chemistry_electron_config/README.md`
+
+---
+
 ## Development Roadmap
 
 - **Phase 1**: Setup and planning (Week 1) ✓
-- **Phase 2**: Content development (Weeks 2-4)
+- **Phase 2**: Content development (Weeks 2-4) - **IN PROGRESS** (1/10 activities complete)
 - **Phase 3**: Testing and refinement (Week 5)
 - **Phase 4**: Documentation and deployment (Week 6)
 
@@ -152,6 +179,6 @@ For questions about this demonstration project, please open an issue in the repo
 
 ---
 
-**Project Status**: Planning Complete, Development Starting
+**Project Status**: Phase 2 - Content Development (1/10 activities complete)
 **Last Updated**: 2025-11-05
-**Version**: 1.0
+**Version**: 1.1
