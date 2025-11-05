@@ -55,6 +55,11 @@ class CoordinateSystem {
         this.showGrid = true;
         this.showAxes = true;
 
+        // Measurement tools
+        this.measurementMode = null; // 'distance', 'angle', or null
+        this.measurementPoints = []; // Points selected for measurement
+        this.measurements = []; // Stored measurements
+
         // Response data
         this.responseData = {};
 
@@ -96,6 +101,9 @@ class CoordinateSystem {
 
                 // Draw elements
                 self.drawElements(p);
+
+                // Draw measurements overlay
+                self.drawMeasurements(p);
 
                 // Update mouse coordinates display
                 self.updateMouseDisplay(p);
@@ -621,14 +629,21 @@ class CoordinateSystem {
 
         // Check if clicking on a point
         for (let point of this.points) {
-            if (!point.draggable) continue;
-
             const dist = Math.sqrt((worldX - point.x) ** 2 + (worldY - point.y) ** 2);
             const threshold = this.screenToWorldDistance(point.radius * 1.5);
 
             if (dist < threshold) {
-                this.draggedPoint = point;
-                return;
+                // If in measurement mode, handle measurement click
+                if (this.measurementMode) {
+                    this.handleMeasurementClick(point);
+                    return;
+                }
+
+                // Otherwise, if draggable, start dragging
+                if (point.draggable) {
+                    this.draggedPoint = point;
+                    return;
+                }
             }
         }
     }
@@ -703,10 +718,44 @@ class CoordinateSystem {
         // Apply constraints
         if (this.draggedPoint.constraints) {
             const constraints = this.draggedPoint.constraints;
+
             if (constraints.type === 'bounds') {
                 const bounds = constraints.bounds || {};
                 worldX = Math.max(bounds.xMin || this.xMin, Math.min(bounds.xMax || this.xMax, worldX));
                 worldY = Math.max(bounds.yMin || this.yMin, Math.min(bounds.yMax || this.yMax, worldY));
+            }
+
+            else if (constraints.type === 'line') {
+                // Constrain point to move along a line y = f(x)
+                try {
+                    const expr = math.compile(constraints.expression);
+                    worldY = expr.evaluate({ x: worldX });
+
+                    // Ensure y is within viewport
+                    if (worldY < this.yMin) {
+                        worldY = this.yMin;
+                        // Solve for x if possible (for now just clamp)
+                    } else if (worldY > this.yMax) {
+                        worldY = this.yMax;
+                    }
+                } catch (e) {
+                    console.error('Error evaluating line constraint:', e);
+                }
+            }
+
+            else if (constraints.type === 'circle') {
+                // Constrain point to move along a circle
+                const center = constraints.center || [0, 0];
+                const radius = constraints.radius || 1;
+
+                // Calculate angle from center to mouse position
+                const dx = worldX - center[0];
+                const dy = worldY - center[1];
+                const angle = Math.atan2(dy, dx);
+
+                // Place point on circle at that angle
+                worldX = center[0] + radius * Math.cos(angle);
+                worldY = center[1] + radius * Math.sin(angle);
             }
         }
 
@@ -954,6 +1003,7 @@ class CoordinateSystem {
      * Validate a single rule
      */
     validateRule(rule) {
+        // Point Position Validation
         if (rule.type === 'pointPosition') {
             const point = this.points.find(p => p.id === rule.pointId);
             if (!point) {
@@ -976,6 +1026,154 @@ class CoordinateSystem {
                     maxScore: rule.scoring?.correct || 1,
                     feedback: rule.feedback?.incorrect || 'Incorrect position'
                 };
+            }
+        }
+
+        // Point on Line Validation
+        if (rule.type === 'pointOnLine') {
+            const point = this.points.find(p => p.id === rule.pointId);
+            if (!point) {
+                return { score: 0, maxScore: 1, feedback: 'Point not found' };
+            }
+
+            try {
+                // Evaluate line expression at point's x coordinate
+                const expr = math.compile(rule.lineExpression);
+                const expectedY = expr.evaluate({ x: point.x });
+
+                const tolerance = rule.tolerance || 0.1;
+                const distance = Math.abs(point.y - expectedY);
+
+                if (distance <= tolerance) {
+                    return {
+                        score: rule.scoring?.correct || 1,
+                        maxScore: rule.scoring?.correct || 1,
+                        feedback: rule.feedback?.correct || `Point is on the line y = ${rule.lineExpression}`
+                    };
+                } else {
+                    return {
+                        score: 0,
+                        maxScore: rule.scoring?.correct || 1,
+                        feedback: rule.feedback?.incorrect || `Point should be on the line y = ${rule.lineExpression}`
+                    };
+                }
+            } catch (e) {
+                return { score: 0, maxScore: 1, feedback: 'Invalid line expression' };
+            }
+        }
+
+        // Distance Between Points Validation
+        if (rule.type === 'distance') {
+            const point1 = this.points.find(p => p.id === rule.point1Id);
+            const point2 = this.points.find(p => p.id === rule.point2Id);
+
+            if (!point1 || !point2) {
+                return { score: 0, maxScore: 1, feedback: 'One or both points not found' };
+            }
+
+            const actualDistance = Math.sqrt(
+                (point2.x - point1.x) ** 2 + (point2.y - point1.y) ** 2
+            );
+            const targetDistance = rule.target;
+            const tolerance = rule.tolerance || 0.2;
+
+            if (Math.abs(actualDistance - targetDistance) <= tolerance) {
+                return {
+                    score: rule.scoring?.correct || 1,
+                    maxScore: rule.scoring?.correct || 1,
+                    feedback: rule.feedback?.correct || `Distance is ${actualDistance.toFixed(2)}, correct!`
+                };
+            } else {
+                return {
+                    score: 0,
+                    maxScore: rule.scoring?.correct || 1,
+                    feedback: rule.feedback?.incorrect || `Distance is ${actualDistance.toFixed(2)}, should be ${targetDistance.toFixed(2)}`
+                };
+            }
+        }
+
+        // Slope Between Points Validation
+        if (rule.type === 'slope') {
+            const point1 = this.points.find(p => p.id === rule.point1Id);
+            const point2 = this.points.find(p => p.id === rule.point2Id);
+
+            if (!point1 || !point2) {
+                return { score: 0, maxScore: 1, feedback: 'One or both points not found' };
+            }
+
+            const dx = point2.x - point1.x;
+            const dy = point2.y - point1.y;
+
+            // Handle vertical line
+            if (Math.abs(dx) < 0.001) {
+                if (rule.target === Infinity || rule.target === 'undefined') {
+                    return {
+                        score: rule.scoring?.correct || 1,
+                        maxScore: rule.scoring?.correct || 1,
+                        feedback: rule.feedback?.correct || 'Slope is undefined (vertical line), correct!'
+                    };
+                } else {
+                    return {
+                        score: 0,
+                        maxScore: rule.scoring?.correct || 1,
+                        feedback: rule.feedback?.incorrect || 'Slope is undefined (vertical line)'
+                    };
+                }
+            }
+
+            const actualSlope = dy / dx;
+            const targetSlope = rule.target;
+            const tolerance = rule.tolerance || 0.1;
+
+            if (Math.abs(actualSlope - targetSlope) <= tolerance) {
+                return {
+                    score: rule.scoring?.correct || 1,
+                    maxScore: rule.scoring?.correct || 1,
+                    feedback: rule.feedback?.correct || `Slope is ${actualSlope.toFixed(2)}, correct!`
+                };
+            } else {
+                return {
+                    score: 0,
+                    maxScore: rule.scoring?.correct || 1,
+                    feedback: rule.feedback?.incorrect || `Slope is ${actualSlope.toFixed(2)}, should be ${targetSlope.toFixed(2)}`
+                };
+            }
+        }
+
+        // Point on Function Validation
+        if (rule.type === 'pointOnFunction') {
+            const point = this.points.find(p => p.id === rule.pointId);
+            if (!point) {
+                return { score: 0, maxScore: 1, feedback: 'Point not found' };
+            }
+
+            const func = this.functions.find(f => f.id === rule.functionId);
+            if (!func) {
+                return { score: 0, maxScore: 1, feedback: 'Function not found' };
+            }
+
+            try {
+                const expr = math.compile(func.expression);
+                const expectedY = expr.evaluate({ x: point.x });
+
+                const tolerance = rule.tolerance || 0.1;
+                const distance = Math.abs(point.y - expectedY);
+
+                if (distance <= tolerance) {
+                    return {
+                        score: rule.scoring?.correct || 1,
+                        maxScore: rule.scoring?.correct || 1,
+                        feedback: rule.feedback?.correct || `Point is on the function`
+                    };
+                } else {
+                    return {
+                        score: 0,
+                        maxScore: rule.scoring?.correct || 1,
+                        feedback: rule.feedback?.incorrect || `Point should be on the function`
+                    };
+                }
+            } catch (e) {
+                return { score: 0, maxScore: 1, feedback: 'Error evaluating function' };
             }
         }
 
@@ -1137,6 +1335,239 @@ class CoordinateSystem {
 
         console.log(`🔍− Zoom out: ${(newZoom * 100).toFixed(0)}%`);
         return true;
+    }
+
+    /**
+     * Enable measurement mode
+     */
+    enableMeasurementMode(type) {
+        if (type !== 'distance' && type !== 'angle') {
+            console.error('Invalid measurement type. Use "distance" or "angle".');
+            return false;
+        }
+
+        this.measurementMode = type;
+        this.measurementPoints = [];
+        console.log(`📏 Measurement mode: ${type}`);
+        return true;
+    }
+
+    /**
+     * Disable measurement mode
+     */
+    disableMeasurementMode() {
+        this.measurementMode = null;
+        this.measurementPoints = [];
+        console.log('📏 Measurement mode disabled');
+    }
+
+    /**
+     * Handle measurement click on a point
+     */
+    handleMeasurementClick(point) {
+        if (!this.measurementMode) return;
+
+        const maxPoints = this.measurementMode === 'distance' ? 2 : 3;
+
+        // Add point to measurement
+        this.measurementPoints.push(point);
+
+        console.log(`📏 Point ${this.measurementPoints.length}/${maxPoints} selected: ${point.id}`);
+
+        // Calculate and store measurement when we have enough points
+        if (this.measurementPoints.length === maxPoints) {
+            let measurement = {
+                type: this.measurementMode,
+                points: [...this.measurementPoints],
+                timestamp: Date.now()
+            };
+
+            if (this.measurementMode === 'distance') {
+                measurement.value = this.calculateDistance(
+                    this.measurementPoints[0],
+                    this.measurementPoints[1]
+                );
+                measurement.label = `d = ${measurement.value.toFixed(2)}`;
+                console.log(`📏 Distance: ${measurement.value.toFixed(2)} units`);
+            } else if (this.measurementMode === 'angle') {
+                measurement.value = this.calculateAngle(
+                    this.measurementPoints[0],
+                    this.measurementPoints[1],
+                    this.measurementPoints[2]
+                );
+                measurement.label = `∠ = ${measurement.value.toFixed(1)}°`;
+                console.log(`📐 Angle: ${measurement.value.toFixed(1)}°`);
+            }
+
+            this.measurements.push(measurement);
+            this.measurementPoints = []; // Reset for next measurement
+        }
+    }
+
+    /**
+     * Clear all measurements
+     */
+    clearMeasurements() {
+        this.measurements = [];
+        this.measurementPoints = [];
+        console.log('✕ All measurements cleared');
+    }
+
+    /**
+     * Calculate distance between two points
+     */
+    calculateDistance(p1, p2) {
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    /**
+     * Calculate angle formed by three points (angle at p2)
+     */
+    calculateAngle(p1, p2, p3) {
+        const dx1 = p1.x - p2.x;
+        const dy1 = p1.y - p2.y;
+        const dx2 = p3.x - p2.x;
+        const dy2 = p3.y - p2.y;
+
+        const angle1 = Math.atan2(dy1, dx1);
+        const angle2 = Math.atan2(dy2, dx2);
+
+        let angle = angle2 - angle1;
+
+        // Convert to degrees and normalize to 0-360
+        angle = angle * (180 / Math.PI);
+        if (angle < 0) angle += 360;
+
+        // Return the smaller angle (0-180)
+        if (angle > 180) angle = 360 - angle;
+
+        return angle;
+    }
+
+    /**
+     * Draw measurements overlay
+     */
+    drawMeasurements(p) {
+        // Draw completed measurements
+        this.measurements.forEach(m => {
+            if (m.type === 'distance') {
+                this.drawDistanceMeasurement(p, m);
+            } else if (m.type === 'angle') {
+                this.drawAngleMeasurement(p, m);
+            }
+        });
+
+        // Draw in-progress measurement
+        if (this.measurementPoints.length > 0) {
+            p.stroke(0, 150, 255, 150);
+            p.strokeWeight(2);
+            p.fill(0, 150, 255, 50);
+
+            // Highlight selected points
+            this.measurementPoints.forEach(point => {
+                const sx = this.worldToScreenX(point.x);
+                const sy = this.worldToScreenY(point.y);
+                p.ellipse(sx, sy, 20, 20);
+            });
+
+            // Draw line between points
+            if (this.measurementPoints.length === 2 && this.measurementMode === 'distance') {
+                const sx1 = this.worldToScreenX(this.measurementPoints[0].x);
+                const sy1 = this.worldToScreenY(this.measurementPoints[0].y);
+                const sx2 = this.worldToScreenX(this.measurementPoints[1].x);
+                const sy2 = this.worldToScreenY(this.measurementPoints[1].y);
+                p.line(sx1, sy1, sx2, sy2);
+            } else if (this.measurementPoints.length >= 2 && this.measurementMode === 'angle') {
+                const sx1 = this.worldToScreenX(this.measurementPoints[0].x);
+                const sy1 = this.worldToScreenY(this.measurementPoints[0].y);
+                const sx2 = this.worldToScreenX(this.measurementPoints[1].x);
+                const sy2 = this.worldToScreenY(this.measurementPoints[1].y);
+                p.line(sx1, sy1, sx2, sy2);
+
+                if (this.measurementPoints.length === 3) {
+                    const sx3 = this.worldToScreenX(this.measurementPoints[2].x);
+                    const sy3 = this.worldToScreenY(this.measurementPoints[2].y);
+                    p.line(sx2, sy2, sx3, sy3);
+                }
+            }
+        }
+    }
+
+    /**
+     * Draw distance measurement
+     */
+    drawDistanceMeasurement(p, measurement) {
+        const p1 = measurement.points[0];
+        const p2 = measurement.points[1];
+
+        const sx1 = this.worldToScreenX(p1.x);
+        const sy1 = this.worldToScreenY(p1.y);
+        const sx2 = this.worldToScreenX(p2.x);
+        const sy2 = this.worldToScreenY(p2.y);
+
+        // Draw line
+        p.stroke(255, 100, 0);
+        p.strokeWeight(2);
+        p.line(sx1, sy1, sx2, sy2);
+
+        // Draw label at midpoint
+        const midX = (sx1 + sx2) / 2;
+        const midY = (sy1 + sy2) / 2;
+
+        p.fill(255, 255, 255, 230);
+        p.noStroke();
+        const textW = p.textWidth(measurement.label);
+        p.rect(midX - textW/2 - 4, midY - 10, textW + 8, 20, 4);
+
+        p.fill(255, 100, 0);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(12);
+        p.text(measurement.label, midX, midY);
+    }
+
+    /**
+     * Draw angle measurement
+     */
+    drawAngleMeasurement(p, measurement) {
+        const p1 = measurement.points[0];
+        const p2 = measurement.points[1];
+        const p3 = measurement.points[2];
+
+        const sx1 = this.worldToScreenX(p1.x);
+        const sy1 = this.worldToScreenY(p1.y);
+        const sx2 = this.worldToScreenX(p2.x);
+        const sy2 = this.worldToScreenY(p2.y);
+        const sx3 = this.worldToScreenX(p3.x);
+        const sy3 = this.worldToScreenY(p3.y);
+
+        // Draw lines
+        p.stroke(100, 200, 0);
+        p.strokeWeight(2);
+        p.line(sx1, sy1, sx2, sy2);
+        p.line(sx2, sy2, sx3, sy3);
+
+        // Draw arc at vertex
+        const angle1 = Math.atan2(sy1 - sy2, sx1 - sx2);
+        const angle2 = Math.atan2(sy3 - sy2, sx3 - sx2);
+
+        p.noFill();
+        p.arc(sx2, sy2, 40, 40, Math.min(angle1, angle2), Math.max(angle1, angle2));
+
+        // Draw label near vertex
+        const labelX = sx2 + 25;
+        const labelY = sy2 - 15;
+
+        p.fill(255, 255, 255, 230);
+        p.noStroke();
+        const textW = p.textWidth(measurement.label);
+        p.rect(labelX - textW/2 - 4, labelY - 10, textW + 8, 20, 4);
+
+        p.fill(100, 200, 0);
+        p.textAlign(p.CENTER, p.CENTER);
+        p.textSize(12);
+        p.text(measurement.label, labelX, labelY);
     }
 
     /**

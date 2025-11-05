@@ -241,6 +241,54 @@ function exportCanvasImage() {
 }
 
 /**
+ * Enable measurement tool
+ */
+function enableMeasurementTool(type) {
+    const success = coordinateSystem.enableMeasurementMode(type);
+
+    if (success) {
+        // Update button states
+        document.querySelectorAll('#measureDistanceBtn, #measureAngleBtn').forEach(btn => {
+            btn.style.backgroundColor = '';
+            btn.style.color = '';
+        });
+
+        const activeBtn = type === 'distance'
+            ? document.getElementById('measureDistanceBtn')
+            : document.getElementById('measureAngleBtn');
+
+        if (activeBtn) {
+            activeBtn.style.backgroundColor = '#4CAF50';
+            activeBtn.style.color = 'white';
+        }
+
+        const message = type === 'distance'
+            ? '📏 Distance mode: Click two points to measure'
+            : '📐 Angle mode: Click three points (angle at second point)';
+
+        showMessage(message, 'info');
+        updateStatus(`Measurement mode: ${type}`);
+    }
+}
+
+/**
+ * Clear measurement tool
+ */
+function clearMeasurementTool() {
+    coordinateSystem.disableMeasurementMode();
+    coordinateSystem.clearMeasurements();
+
+    // Reset button states
+    document.querySelectorAll('#measureDistanceBtn, #measureAngleBtn').forEach(btn => {
+        btn.style.backgroundColor = '';
+        btn.style.color = '';
+    });
+
+    showMessage('✕ Measurements cleared', 'info');
+    updateStatus('Ready');
+}
+
+/**
  * Show a temporary message
  */
 function showMessage(message, type = 'info') {

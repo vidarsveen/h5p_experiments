@@ -28,6 +28,12 @@
                     <button class="example-btn" onclick="loadExample('function')">Function Plot</button>
                     <button class="example-btn" onclick="loadExample('polygon')">Polygon</button>
                     <button class="example-btn" onclick="loadExample('complete')">Complete Example</button>
+                    <h4 style="margin-top: 12px; margin-bottom: 6px; font-size: 0.9em; color: #666;">Phase 2 Features:</h4>
+                    <button class="example-btn" onclick="loadExample('lineConstraint')">Line Constraint</button>
+                    <button class="example-btn" onclick="loadExample('circleConstraint')">Circle Constraint</button>
+                    <button class="example-btn" onclick="loadExample('distanceValidation')">Distance Check</button>
+                    <button class="example-btn" onclick="loadExample('slopeValidation')">Slope Check</button>
+                    <button class="example-btn" onclick="loadExample('pointOnFunction')">Point on Function</button>
                 </div>
 
                 <div class="config-section">
@@ -63,6 +69,10 @@
                         <button onclick="undoAction()" title="Undo (Ctrl+Z)">↶</button>
                         <button onclick="redoAction()" title="Redo (Ctrl+Shift+Z)">↷</button>
                         <button onclick="exportCanvasImage()" title="Export as PNG">💾</button>
+                        <span style="border-left: 1px solid #ddd; margin: 0 4px;"></span>
+                        <button id="measureDistanceBtn" onclick="enableMeasurementTool('distance')" title="Measure Distance">📏</button>
+                        <button id="measureAngleBtn" onclick="enableMeasurementTool('angle')" title="Measure Angle">📐</button>
+                        <button onclick="clearMeasurementTool()" title="Clear Measurements">✕</button>
                     </div>
                 </div>
                 <div id="canvasContainer"></div>
@@ -75,7 +85,7 @@
         </main>
 
         <footer>
-            <p>Interactive Coordinate System PCI - Prototype v0.2</p>
+            <p>Interactive Coordinate System PCI - Prototype v0.3 (Phase 2 Complete)</p>
         </footer>
     </div>
 
