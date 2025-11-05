@@ -165,10 +165,49 @@ All activities use pure HTML/CSS/JavaScript - no build tools needed.
 
 ---
 
+### 2. Interactive Video Player - Projectile Motion ✅
+
+**Path**: `activities/02_projectile_motion_video/index.html`
+**Subject**: Physics - Classical Mechanics
+**Topic**: Projectile Motion
+
+**Quick Start**: Just open `index.html` in any browser!
+
+**Features**:
+- Custom HTML5 video player with full controls
+- 4 embedded questions that pause video at key moments
+- Multiple choice questions with immediate feedback
+- Progress tracking and score calculation
+- Visual checkpoint markers on progress bar
+- Keyboard shortcuts (Space=play/pause, F=fullscreen, etc.)
+- Responsive design for all devices
+- Progress persistence via localStorage
+
+**Educational Focus**:
+- Two-dimensional motion (horizontal + vertical)
+- Constant horizontal velocity (no air resistance)
+- Vertical motion affected by gravity
+- Parabolic trajectory analysis
+- Optimal launch angle for maximum range (45°)
+
+**Interactive Questions**:
+1. Components of projectile motion (5s)
+2. Horizontal velocity behavior (15s)
+3. Minimum velocity point (25s)
+4. Optimal launch angle (35s)
+
+**Technology**: Pure HTML5/CSS3/JavaScript (ES6) + HTML5 Video API
+
+**Note**: Uses a sample/fallback video. Replace with your own physics video in `assets/videos/` folder.
+
+**Try it**: Open `activities/02_projectile_motion_video/index.html` in your browser!
+
+---
+
 ## Development Roadmap
 
 - **Phase 1**: Setup and planning (Week 1) ✓ - **REVISED for standalone approach**
-- **Phase 2**: Content development (Weeks 2-4) - **IN PROGRESS** (1/10 activities complete)
+- **Phase 2**: Content development (Weeks 2-4) - **IN PROGRESS** (2/10 activities complete - 20%)
 - **Phase 3**: Testing and refinement (Week 5)
 - **Phase 4**: Documentation and deployment (Week 6)
 
@@ -236,7 +275,7 @@ For questions about this demonstration project, please open an issue in the repo
 
 ---
 
-**Project Status**: Phase 2 - Building Activities (1/10 complete ✅)
+**Project Status**: Phase 2 - Building Activities (2/10 complete ✅✅) 20% Done
 **Last Updated**: 2025-11-05
-**Version**: 2.1 (Standalone Edition - First Activity Complete!)
+**Version**: 2.2 (Standalone Edition - Chemistry + Physics Complete!)
 **Approach**: Pure HTML/CSS/JavaScript - No H5P platform required

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projectile Motion - Interactive Video Learning</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="activity-header">
+            <h1>Projectile Motion: Interactive Video Lesson</h1>
+            <p class="subtitle">Physics - Classical Mechanics</p>
+        </header>
+
+        <!-- Instructions -->
+        <section class="instructions">
+            <h2>How This Works</h2>
+            <p>Watch the video to learn about projectile motion. The video will pause at key moments to ask you questions. Answer correctly to continue!</p>
+            <div class="learning-objectives">
+                <h3>Learning Objectives:</h3>
+                <ul>
+                    <li>Understand the relationship between angle, velocity, and range</li>
+                    <li>Analyze parabolic motion in two dimensions</li>
+                    <li>Apply kinematic equations to projectile motion</li>
+                    <li>Identify the components of velocity (horizontal and vertical)</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Video Player Area -->
+        <main class="video-section">
+            <div class="video-container">
+                <!-- Video Element -->
+                <video id="mainVideo" class="video-player">
+                    <source src="assets/videos/projectile_motion.mp4" type="video/mp4">
+                    <!-- Fallback: Use a sample video URL if local file doesn't exist -->
+                    <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+
+                <!-- Video Overlay for Questions -->
+                <div id="videoOverlay" class="video-overlay hidden">
+                    <div class="overlay-content">
+                        <div class="question-container">
+                            <h3 id="questionTitle">Question</h3>
+                            <p id="questionText"></p>
+                            <div id="questionOptions" class="question-options">
+                                <!-- Options will be inserted by JavaScript -->
+                            </div>
+                            <div id="questionFeedback" class="question-feedback hidden"></div>
+                            <button id="continueBtn" class="btn-continue hidden">Continue Video</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="video-progress">
+                    <div class="progress-bar">
+                        <div id="progressFilled" class="progress-filled"></div>
+                        <div id="checkpoints" class="checkpoints"></div>
+                    </div>
+                </div>
+
+                <!-- Custom Controls -->
+                <div class="video-controls">
+                    <button id="playPauseBtn" class="control-btn" aria-label="Play/Pause">
+                        <span class="icon">▶</span>
+                    </button>
+                    <span id="currentTime" class="time-display">0:00</span>
+                    <span class="time-separator">/</span>
+                    <span id="duration" class="time-display">0:00</span>
+                    <input type="range" id="seekBar" class="seek-bar" min="0" max="100" value="0" step="0.1">
+                    <button id="muteBtn" class="control-btn" aria-label="Mute/Unmute">
+                        <span class="icon">🔊</span>
+                    </button>
+                    <input type="range" id="volumeBar" class="volume-bar" min="0" max="1" value="1" step="0.1">
+                    <button id="fullscreenBtn" class="control-btn" aria-label="Fullscreen">
+                        <span class="icon">⛶</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Video Stats -->
+            <div class="video-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Progress:</span>
+                    <span id="progressPercent" class="stat-value">0%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Questions Answered:</span>
+                    <span id="questionsAnswered" class="stat-value">0 / 0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Score:</span>
+                    <span id="scoreDisplay" class="stat-value">0%</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Educational Content -->
+        <section class="educational-content">
+            <h2>Key Concepts</h2>
+            <div class="concepts-grid">
+                <div class="concept-card">
+                    <h3>📐 Trajectory</h3>
+                    <p>Projectile motion follows a parabolic path due to constant horizontal velocity and constant downward acceleration (gravity).</p>
+                    <p class="formula">y = x·tan(θ) - (g·x²)/(2·v₀²·cos²(θ))</p>
+                </div>
+                <div class="concept-card">
+                    <h3>➡️ Horizontal Motion</h3>
+                    <p>Horizontal velocity remains constant (no air resistance). Distance = velocity × time.</p>
+                    <p class="formula">x = v₀·cos(θ)·t</p>
+                </div>
+                <div class="concept-card">
+                    <h3>⬇️ Vertical Motion</h3>
+                    <p>Vertical motion is affected by gravity. Velocity decreases going up, increases going down.</p>
+                    <p class="formula">y = v₀·sin(θ)·t - ½·g·t²</p>
+                </div>
+                <div class="concept-card">
+                    <h3>🎯 Range</h3>
+                    <p>Maximum range occurs at 45° launch angle (in vacuum). Range depends on initial velocity and angle.</p>
+                    <p class="formula">R = (v₀²·sin(2θ))/g</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Resources -->
+        <section class="resources">
+            <h2>Additional Resources</h2>
+            <div class="resource-list">
+                <div class="resource-item">
+                    <h4>📺 Video Note:</h4>
+                    <p>This interactive player uses a sample video. Replace <code>assets/videos/projectile_motion.mp4</code> with your own physics video about projectile motion.</p>
+                </div>
+                <div class="resource-item">
+                    <h4>🔧 Customization:</h4>
+                    <p>Edit <code>js/activity.js</code> to modify questions, timestamps, and feedback messages.</p>
+                </div>
+                <div class="resource-item">
+                    <h4>📚 Further Learning:</h4>
+                    <p>PhET Interactive Simulations: Projectile Motion<br>
+                    Khan Academy: 2D Motion (Projectile Motion)<br>
+                    HyperPhysics: Trajectory Calculator</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="activity-footer">
+            <p>Interactive Physics Learning Activity | Projectile Motion</p>
+            <p>Custom HTML5 Video Player with Interactive Questions</p>
+        </footer>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="js/activity.js"></script>
+</body>
+</html>
