@@ -65,6 +65,14 @@ class CoordinateSystem {
         this.selectedPointIndex = -1; // Index of currently selected point (-1 = none)
         this.keyboardMoveSpeed = 0.1; // World units per arrow key press
 
+        // Animation system
+        this.animations = []; // Active animations
+        this.animationEnabled = false; // Global animation toggle
+
+        // Performance optimization
+        this.compiledExpressions = new Map(); // Cache for compiled math expressions
+        this.renderCache = null; // Cached rendering state
+
         // Response data
         this.responseData = {};
 
@@ -94,6 +102,11 @@ class CoordinateSystem {
             p.draw = () => {
                 p.background(255);
 
+                // Update animations
+                if (self.animationEnabled) {
+                    self.updateAnimations(p);
+                }
+
                 // Draw grid
                 if (self.showGrid) {
                     self.drawGrid(p);
@@ -112,6 +125,11 @@ class CoordinateSystem {
 
                 // Draw snap feedback
                 self.drawSnapFeedback(p);
+
+                // Draw animation trails
+                if (self.animationEnabled) {
+                    self.drawAnimationTrails(p);
+                }
 
                 // Update mouse coordinates display
                 self.updateMouseDisplay(p);
@@ -243,20 +261,21 @@ class CoordinateSystem {
     }
 
     /**
-     * Add a function element
+     * Add a function element (supports standard and piecewise functions)
      */
     addFunction(config) {
         const func = {
             type: 'function',
             id: config.id || `function_${this.functions.length}`,
             expression: config.expression,
+            piecewise: config.piecewise || null, // Array of {expression, domain, condition}
             color: config.color || config.style?.color || '#2196F3',
             thickness: config.thickness || config.style?.thickness || 2,
             domain: config.domain || [this.xMin, this.xMax],
             samples: config.samples || 200
         };
 
-        // Pre-calculate segments for the function (handles discontinuities)
+        // Pre-calculate segments for the function (handles discontinuities and piecewise)
         func.segments = this.calculateFunctionPoints(func);
 
         this.functions.push(func);
@@ -264,17 +283,42 @@ class CoordinateSystem {
     }
 
     /**
-     * Calculate points for a function with discontinuity detection
+     * Get or compile a math expression (with caching for performance)
+     */
+    getCompiledExpression(expression) {
+        if (this.compiledExpressions.has(expression)) {
+            return this.compiledExpressions.get(expression);
+        }
+
+        try {
+            const compiled = math.compile(expression);
+            this.compiledExpressions.set(expression, compiled);
+            return compiled;
+        } catch (e) {
+            console.error('Failed to compile expression:', expression, e);
+            return null;
+        }
+    }
+
+    /**
+     * Calculate points for a function with discontinuity detection and piecewise support
      */
     calculateFunctionPoints(func) {
+        // Handle piecewise functions
+        if (func.piecewise && Array.isArray(func.piecewise)) {
+            return this.calculatePiecewiseFunctionPoints(func);
+        }
+
+        // Standard function with discontinuity detection
         const segments = []; // Array of continuous segments
         let currentSegment = [];
         const [xStart, xEnd] = func.domain;
         const step = (xEnd - xStart) / func.samples;
 
         try {
-            // Use math.js for safe evaluation
-            const expr = math.compile(func.expression);
+            // Use cached compiled expression for performance
+            const expr = this.getCompiledExpression(func.expression);
+            if (!expr) return [];
 
             let prevY = null;
 
@@ -328,6 +372,77 @@ class CoordinateSystem {
         }
 
         return segments;
+    }
+
+    /**
+     * Calculate points for piecewise function
+     */
+    calculatePiecewiseFunctionPoints(func) {
+        const allSegments = [];
+        const [xStart, xEnd] = func.domain;
+        const step = (xEnd - xStart) / func.samples;
+
+        // Process each piece
+        func.piecewise.forEach(piece => {
+            const pieceSegments = [];
+            let currentSegment = [];
+
+            try {
+                const expr = this.getCompiledExpression(piece.expression);
+                if (!expr) return;
+
+                const [pieceXStart, pieceXEnd] = piece.domain || [xStart, xEnd];
+
+                let prevY = null;
+
+                for (let x = pieceXStart; x <= pieceXEnd; x += step) {
+                    if (x < xStart || x > xEnd) continue; // Outside main domain
+
+                    try {
+                        const y = expr.evaluate({ x: x });
+
+                        if (typeof y === 'number' && isFinite(y)) {
+                            // Check for discontinuity
+                            if (prevY !== null) {
+                                const yRange = this.yMax - this.yMin;
+                                const jump = Math.abs(y - prevY);
+                                if (jump > yRange * 0.5) {
+                                    if (currentSegment.length > 0) {
+                                        pieceSegments.push(currentSegment);
+                                        currentSegment = [];
+                                    }
+                                }
+                            }
+
+                            currentSegment.push({ x, y });
+                            prevY = y;
+                        } else {
+                            if (currentSegment.length > 0) {
+                                pieceSegments.push(currentSegment);
+                                currentSegment = [];
+                            }
+                            prevY = null;
+                        }
+                    } catch (e) {
+                        if (currentSegment.length > 0) {
+                            pieceSegments.push(currentSegment);
+                            currentSegment = [];
+                        }
+                        prevY = null;
+                    }
+                }
+
+                if (currentSegment.length > 0) {
+                    pieceSegments.push(currentSegment);
+                }
+
+                allSegments.push(...pieceSegments);
+            } catch (e) {
+                console.error('Error parsing piecewise piece:', piece.expression, e);
+            }
+        });
+
+        return allSegments;
     }
 
     /**
@@ -1804,6 +1919,136 @@ class CoordinateSystem {
         p.textAlign(p.CENTER, p.CENTER);
         p.textSize(12);
         p.text(measurement.label, labelX, labelY);
+    }
+
+    /**
+     * Animate point along a path (circle, line, or parametric)
+     */
+    animatePoint(config) {
+        const point = this.points.find(p => p.id === config.pointId);
+        if (!point) {
+            console.error(`Point ${config.pointId} not found for animation`);
+            return;
+        }
+
+        const animation = {
+            point: point,
+            type: config.type, // 'circle', 'line', 'parametric'
+            duration: config.duration || 5000, // milliseconds
+            startTime: Date.now(),
+            loop: config.loop !== false,
+            trail: config.trail !== false,
+            trailPoints: [],
+            maxTrailLength: config.trailLength || 50,
+            config: config
+        };
+
+        this.animations.push(animation);
+        console.log(`▶ Started ${config.type} animation for ${point.id}`);
+    }
+
+    /**
+     * Update all active animations
+     */
+    updateAnimations(p) {
+        const now = Date.now();
+
+        this.animations = this.animations.filter(anim => {
+            const elapsed = now - anim.startTime;
+            const t = elapsed / anim.duration; // 0 to 1
+
+            if (t >= 1 && !anim.loop) {
+                return false; // Remove completed non-looping animations
+            }
+
+            const loopT = anim.loop ? (t % 1) : Math.min(t, 1);
+
+            // Calculate new position based on animation type
+            if (anim.type === 'circle') {
+                const center = anim.config.center || [0, 0];
+                const radius = anim.config.radius || 2;
+                const angle = loopT * 2 * Math.PI;
+                anim.point.x = center[0] + radius * Math.cos(angle);
+                anim.point.y = center[1] + radius * Math.sin(angle);
+            } else if (anim.type === 'line') {
+                const start = anim.config.start || [0, 0];
+                const end = anim.config.end || [5, 5];
+                anim.point.x = start[0] + (end[0] - start[0]) * loopT;
+                anim.point.y = start[1] + (end[1] - start[1]) * loopT;
+            } else if (anim.type === 'parametric') {
+                try {
+                    const xExpr = math.compile(anim.config.xExpression || 't');
+                    const yExpr = math.compile(anim.config.yExpression || 't');
+                    anim.point.x = xExpr.evaluate({ t: loopT });
+                    anim.point.y = yExpr.evaluate({ t: loopT });
+                } catch (e) {
+                    console.error('Animation parametric error:', e);
+                }
+            }
+
+            // Add to trail
+            if (anim.trail) {
+                anim.trailPoints.push({ x: anim.point.x, y: anim.point.y });
+                if (anim.trailPoints.length > anim.maxTrailLength) {
+                    anim.trailPoints.shift();
+                }
+            }
+
+            return true; // Keep animation
+        });
+
+        // Update response data
+        this.updateResponseData();
+    }
+
+    /**
+     * Draw animation trails
+     */
+    drawAnimationTrails(p) {
+        this.animations.forEach(anim => {
+            if (!anim.trail || anim.trailPoints.length < 2) return;
+
+            p.push();
+            p.noFill();
+
+            // Draw trail with fading opacity
+            for (let i = 1; i < anim.trailPoints.length; i++) {
+                const alpha = (i / anim.trailPoints.length) * 150;
+                p.stroke(anim.point.color + Math.floor(alpha).toString(16).padStart(2, '0'));
+                p.strokeWeight(2);
+
+                const p1 = anim.trailPoints[i - 1];
+                const p2 = anim.trailPoints[i];
+                const sx1 = this.worldToScreenX(p1.x);
+                const sy1 = this.worldToScreenY(p1.y);
+                const sx2 = this.worldToScreenX(p2.x);
+                const sy2 = this.worldToScreenY(p2.y);
+
+                p.line(sx1, sy1, sx2, sy2);
+            }
+
+            p.pop();
+        });
+    }
+
+    /**
+     * Stop all animations
+     */
+    stopAnimations() {
+        this.animations = [];
+        console.log('⏹ Stopped all animations');
+    }
+
+    /**
+     * Toggle animation system
+     */
+    toggleAnimation() {
+        this.animationEnabled = !this.animationEnabled;
+        if (!this.animationEnabled) {
+            this.stopAnimations();
+        }
+        console.log(`${this.animationEnabled ? '▶' : '⏸'} Animation ${this.animationEnabled ? 'enabled' : 'disabled'}`);
+        return this.animationEnabled;
     }
 
     /**
