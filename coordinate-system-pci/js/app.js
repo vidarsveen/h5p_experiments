@@ -144,6 +144,41 @@ function resetSystem() {
 }
 
 /**
+ * Undo wrapper with feedback
+ */
+function undoAction() {
+    const success = coordinateSystem.undo();
+    if (success) {
+        showMessage('↶ Undo', 'info');
+        updateStatus('Undone');
+    } else {
+        showMessage('↶ Already at oldest state', 'info');
+    }
+}
+
+/**
+ * Redo wrapper with feedback
+ */
+function redoAction() {
+    const success = coordinateSystem.redo();
+    if (success) {
+        showMessage('↷ Redo', 'info');
+        updateStatus('Redone');
+    } else {
+        showMessage('↷ Already at newest state', 'info');
+    }
+}
+
+/**
+ * Toggle grid wrapper with feedback
+ */
+function toggleGridAction() {
+    const isOn = coordinateSystem.toggleGrid();
+    showMessage(`⊞ Grid ${isOn ? 'ON' : 'OFF'}`, 'info');
+    updateStatus(isOn ? 'Grid visible' : 'Grid hidden');
+}
+
+/**
  * Show a temporary message
  */
 function showMessage(message, type = 'info') {
@@ -251,17 +286,27 @@ function exportConfig() {
 // Keyboard shortcuts
 document.addEventListener('keydown', function(e) {
     // Ctrl/Cmd + Z for undo
-    if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
+    if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'z') {
         e.preventDefault();
-        coordinateSystem.undo();
-        showMessage('Undo', 'info');
+        const success = coordinateSystem.undo();
+        if (success) {
+            showMessage('↶ Undo', 'info');
+            updateStatus('Undone');
+        } else {
+            showMessage('↶ Already at oldest state', 'info');
+        }
     }
 
     // Ctrl/Cmd + Shift + Z for redo
     if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') {
         e.preventDefault();
-        coordinateSystem.redo();
-        showMessage('Redo', 'info');
+        const success = coordinateSystem.redo();
+        if (success) {
+            showMessage('↷ Redo', 'info');
+            updateStatus('Redone');
+        } else {
+            showMessage('↷ Already at newest state', 'info');
+        }
     }
 
     // Ctrl/Cmd + R for reset

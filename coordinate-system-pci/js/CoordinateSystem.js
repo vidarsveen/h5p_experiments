@@ -794,8 +794,20 @@ class CoordinateSystem {
      * Save state to history
      */
     saveState() {
+        // Deep copy points to avoid reference issues
         const state = {
-            points: this.points.map(p => ({ ...p }))
+            points: this.points.map(p => ({
+                type: p.type,
+                id: p.id,
+                x: p.x,
+                y: p.y,
+                label: p.label,
+                color: p.color,
+                radius: p.radius,
+                draggable: p.draggable,
+                constraints: p.constraints ? JSON.parse(JSON.stringify(p.constraints)) : null,
+                snap: p.snap ? JSON.parse(JSON.stringify(p.snap)) : null
+            }))
         };
 
         // Remove future states if we're not at the end
@@ -809,6 +821,8 @@ class CoordinateSystem {
             this.history.shift();
             this.historyIndex--;
         }
+
+        console.log(`💾 State saved. History: ${this.historyIndex + 1}/${this.history.length}`);
     }
 
     /**
@@ -818,6 +832,11 @@ class CoordinateSystem {
         if (this.historyIndex > 0) {
             this.historyIndex--;
             this.restoreState(this.history[this.historyIndex]);
+            console.log(`↶ Undo - History: ${this.historyIndex + 1}/${this.history.length}`);
+            return true;
+        } else {
+            console.log('↶ Undo - Already at oldest state');
+            return false;
         }
     }
 
@@ -828,6 +847,11 @@ class CoordinateSystem {
         if (this.historyIndex < this.history.length - 1) {
             this.historyIndex++;
             this.restoreState(this.history[this.historyIndex]);
+            console.log(`↷ Redo - History: ${this.historyIndex + 1}/${this.history.length}`);
+            return true;
+        } else {
+            console.log('↷ Redo - Already at newest state');
+            return false;
         }
     }
 
@@ -858,6 +882,8 @@ class CoordinateSystem {
      */
     toggleGrid() {
         this.showGrid = !this.showGrid;
+        console.log(`⊞ Grid ${this.showGrid ? 'ON' : 'OFF'}`);
+        return this.showGrid;
     }
 
     /**

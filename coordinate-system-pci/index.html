@@ -56,10 +56,10 @@
                 <div class="canvas-header">
                     <h2>Coordinate System</h2>
                     <div class="canvas-controls">
-                        <button onclick="coordinateSystem.resetView()" title="Reset View">🔄</button>
-                        <button onclick="coordinateSystem.toggleGrid()" title="Toggle Grid">⊞</button>
-                        <button onclick="coordinateSystem.undo()" title="Undo">↶</button>
-                        <button onclick="coordinateSystem.redo()" title="Redo">↷</button>
+                        <button onclick="resetSystem()" title="Reset View">🔄</button>
+                        <button onclick="toggleGridAction()" title="Toggle Grid">⊞</button>
+                        <button onclick="undoAction()" title="Undo (Ctrl+Z)">↶</button>
+                        <button onclick="redoAction()" title="Redo (Ctrl+Shift+Z)">↷</button>
                     </div>
                 </div>
                 <div id="canvasContainer"></div>
