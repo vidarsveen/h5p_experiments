@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cell Division: Mitosis & Meiosis - Interactive Presentation</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Header -->
+        <header class="presentation-header">
+            <h1>Cell Division: Mitosis & Meiosis</h1>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+                <span class="progress-text" id="progressText">Slide 1 of 12</span>
+            </div>
+        </header>
+
+        <!-- Slides Container -->
+        <main class="slides-wrapper">
+            <div class="slides" id="slidesContainer">
+
+                <!-- Slide 1: Title/Introduction -->
+                <section class="slide active" data-slide="1">
+                    <div class="slide-content">
+                        <h2>Understanding Cell Division</h2>
+                        <p class="subtitle">The foundation of growth, reproduction, and repair</p>
+                        <div class="intro-content">
+                            <p>Cell division is the process by which a parent cell divides into two or more daughter cells. This fundamental biological process is essential for:</p>
+                            <ul class="feature-list">
+                                <li>🌱 Growth and development of organisms</li>
+                                <li>🔄 Repair and replacement of damaged cells</li>
+                                <li>👶 Reproduction in living organisms</li>
+                                <li>🧬 Transmission of genetic information</li>
+                            </ul>
+                        </div>
+                        <div class="slide-note">
+                            <strong>Learning Objectives:</strong> By the end of this presentation, you will understand the key differences between mitosis and meiosis, identify the phases of each process, and explain their biological significance.
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 2: Cell Cycle Overview -->
+                <section class="slide" data-slide="2">
+                    <div class="slide-content">
+                        <h2>The Cell Cycle</h2>
+                        <div class="diagram-container">
+                            <div class="cell-cycle-diagram">
+                                <div class="cycle-phase interphase">
+                                    <h3>Interphase</h3>
+                                    <p>G1, S, G2 phases</p>
+                                    <small>~90% of cycle</small>
+                                </div>
+                                <div class="cycle-phase mitosis">
+                                    <h3>M Phase</h3>
+                                    <p>Mitosis & Cytokinesis</p>
+                                    <small>~10% of cycle</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-content">
+                            <p><strong>Interphase</strong> is the period between cell divisions where the cell grows and replicates its DNA:</p>
+                            <ul>
+                                <li><strong>G1 Phase:</strong> Cell growth and normal functions</li>
+                                <li><strong>S Phase:</strong> DNA replication (synthesis)</li>
+                                <li><strong>G2 Phase:</strong> Further growth and preparation for division</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 3: Quiz 1 - Cell Cycle -->
+                <section class="slide quiz-slide" data-slide="3">
+                    <div class="slide-content">
+                        <h2>Knowledge Check: Cell Cycle</h2>
+                        <div class="quiz-container">
+                            <div class="question">
+                                <p class="question-text">During which phase does DNA replication occur?</p>
+                                <div class="options">
+                                    <button class="option-btn" data-answer="wrong" data-feedback="G1 is the growth phase before DNA replication.">A) G1 Phase</button>
+                                    <button class="option-btn" data-answer="correct" data-feedback="Correct! The S (Synthesis) phase is when DNA replication occurs, resulting in identical sister chromatids.">B) S Phase</button>
+                                    <button class="option-btn" data-answer="wrong" data-feedback="G2 is the growth phase after DNA replication.">C) G2 Phase</button>
+                                    <button class="option-btn" data-answer="wrong" data-feedback="M phase is when the actual division occurs, not DNA replication.">D) M Phase</button>
+                                </div>
+                                <div class="feedback" id="quiz1-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 4: Introduction to Mitosis -->
+                <section class="slide" data-slide="4">
+                    <div class="slide-content">
+                        <h2>Mitosis: Somatic Cell Division</h2>
+                        <div class="split-content">
+                            <div class="content-left">
+                                <h3>Purpose</h3>
+                                <p>Mitosis produces two genetically identical daughter cells from a single parent cell.</p>
+                                <h3>Key Characteristics</h3>
+                                <ul>
+                                    <li>Occurs in somatic (body) cells</li>
+                                    <li>Produces 2 daughter cells</li>
+                                    <li>Maintains chromosome number</li>
+                                    <li>Genetically identical to parent</li>
+                                </ul>
+                            </div>
+                            <div class="content-right">
+                                <div class="info-box">
+                                    <h4>Example</h4>
+                                    <p>If a parent cell has 46 chromosomes (diploid), each daughter cell will also have 46 chromosomes.</p>
+                                    <p class="formula">2n → 2n + 2n</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 5: Phases of Mitosis -->
+                <section class="slide" data-slide="5">
+                    <div class="slide-content">
+                        <h2>Phases of Mitosis: PMAT</h2>
+                        <div class="phases-grid">
+                            <div class="phase-card" data-phase="prophase">
+                                <h3>Prophase</h3>
+                                <div class="phase-visual">P</div>
+                                <ul>
+                                    <li>Chromatin condenses into chromosomes</li>
+                                    <li>Nuclear envelope breaks down</li>
+                                    <li>Spindle fibers form</li>
+                                    <li>Centrioles move to opposite poles</li>
+                                </ul>
+                            </div>
+                            <div class="phase-card" data-phase="metaphase">
+                                <h3>Metaphase</h3>
+                                <div class="phase-visual">M</div>
+                                <ul>
+                                    <li>Chromosomes align at cell equator</li>
+                                    <li>Forms the metaphase plate</li>
+                                    <li>Spindle fibers attach to centromeres</li>
+                                    <li>Checkpoint ensures proper attachment</li>
+                                </ul>
+                            </div>
+                            <div class="phase-card" data-phase="anaphase">
+                                <h3>Anaphase</h3>
+                                <div class="phase-visual">A</div>
+                                <ul>
+                                    <li>Sister chromatids separate</li>
+                                    <li>Move to opposite poles</li>
+                                    <li>Spindle fibers shorten</li>
+                                    <li>Cell begins to elongate</li>
+                                </ul>
+                            </div>
+                            <div class="phase-card" data-phase="telophase">
+                                <h3>Telophase</h3>
+                                <div class="phase-visual">T</div>
+                                <ul>
+                                    <li>Nuclear envelopes reform</li>
+                                    <li>Chromosomes decondense</li>
+                                    <li>Spindle fibers disappear</li>
+                                    <li>Cytokinesis begins</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p class="mnemonic"><strong>Memory Aid:</strong> <em>Please Make A Tasty (PMAT)</em></p>
+                    </div>
+                </section>
+
+                <!-- Slide 6: Interactive Mitosis Diagram -->
+                <section class="slide interactive-slide" data-slide="6">
+                    <div class="slide-content">
+                        <h2>Interactive: Identify the Phase</h2>
+                        <p class="instruction">Click on each diagram to reveal which phase of mitosis it represents:</p>
+                        <div class="interactive-diagrams">
+                            <div class="clickable-diagram" data-phase="metaphase">
+                                <div class="diagram-placeholder">
+                                    <div class="cell-diagram metaphase-diagram">
+                                        <div class="chromosomes-metaphase"></div>
+                                    </div>
+                                </div>
+                                <button class="reveal-btn">Reveal Phase</button>
+                                <div class="phase-answer hidden">
+                                    <strong>Metaphase</strong>
+                                    <p>Chromosomes aligned at the center</p>
+                                </div>
+                            </div>
+                            <div class="clickable-diagram" data-phase="anaphase">
+                                <div class="diagram-placeholder">
+                                    <div class="cell-diagram anaphase-diagram">
+                                        <div class="chromosomes-anaphase"></div>
+                                    </div>
+                                </div>
+                                <button class="reveal-btn">Reveal Phase</button>
+                                <div class="phase-answer hidden">
+                                    <strong>Anaphase</strong>
+                                    <p>Sister chromatids moving apart</p>
+                                </div>
+                            </div>
+                            <div class="clickable-diagram" data-phase="prophase">
+                                <div class="diagram-placeholder">
+                                    <div class="cell-diagram prophase-diagram">
+                                        <div class="chromosomes-prophase"></div>
+                                    </div>
+                                </div>
+                                <button class="reveal-btn">Reveal Phase</button>
+                                <div class="phase-answer hidden">
+                                    <strong>Prophase</strong>
+                                    <p>Chromosomes condensing, nuclear envelope breaking down</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 7: Quiz 2 - Mitosis -->
+                <section class="slide quiz-slide" data-slide="7">
+                    <div class="slide-content">
+                        <h2>Knowledge Check: Mitosis</h2>
+                        <div class="quiz-container">
+                            <div class="question">
+                                <p class="question-text">What happens during anaphase of mitosis?</p>
+                                <div class="options">
+                                    <button class="option-btn" data-answer="wrong" data-feedback="This describes metaphase, not anaphase.">A) Chromosomes line up at the cell's equator</button>
+                                    <button class="option-btn" data-answer="correct" data-feedback="Correct! During anaphase, sister chromatids separate and move to opposite poles of the cell.">B) Sister chromatids separate and move to opposite poles</button>
+                                    <button class="option-btn" data-answer="wrong" data-feedback="This describes prophase, not anaphase.">C) The nuclear envelope breaks down</button>
+                                    <button class="option-btn" data-answer="wrong" data-feedback="This describes telophase/cytokinesis, not anaphase.">D) The cell membrane pinches inward</button>
+                                </div>
+                                <div class="feedback" id="quiz2-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 8: Introduction to Meiosis -->
+                <section class="slide" data-slide="8">
+                    <div class="slide-content">
+                        <h2>Meiosis: Reproductive Cell Division</h2>
+                        <div class="split-content">
+                            <div class="content-left">
+                                <h3>Purpose</h3>
+                                <p>Meiosis produces four genetically unique gametes (sex cells) from a single parent cell.</p>
+                                <h3>Key Characteristics</h3>
+                                <ul>
+                                    <li>Occurs in reproductive cells</li>
+                                    <li>Produces 4 daughter cells</li>
+                                    <li>Reduces chromosome number by half</li>
+                                    <li>Genetically unique (variation)</li>
+                                    <li>Two rounds of division (Meiosis I & II)</li>
+                                </ul>
+                            </div>
+                            <div class="content-right">
+                                <div class="info-box">
+                                    <h4>Example</h4>
+                                    <p>If a parent cell has 46 chromosomes (diploid), each gamete will have 23 chromosomes (haploid).</p>
+                                    <p class="formula">2n → n + n + n + n</p>
+                                    <p class="note">When fertilization occurs, two gametes combine to restore the diploid number.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 9: Meiosis I vs Meiosis II -->
+                <section class="slide" data-slide="9">
+                    <div class="slide-content">
+                        <h2>Two Rounds of Division</h2>
+                        <div class="comparison-table">
+                            <div class="comparison-column">
+                                <h3>Meiosis I</h3>
+                                <p class="subtitle">Reductional Division</p>
+                                <ul>
+                                    <li><strong>Prophase I:</strong> Homologous chromosomes pair up (synapsis) and crossing over occurs</li>
+                                    <li><strong>Metaphase I:</strong> Homologous pairs align at equator</li>
+                                    <li><strong>Anaphase I:</strong> Homologous chromosomes separate</li>
+                                    <li><strong>Telophase I:</strong> Two haploid cells form</li>
+                                </ul>
+                                <p class="key-point"><strong>Result:</strong> 2 haploid cells (each with duplicated chromosomes)</p>
+                            </div>
+                            <div class="comparison-column">
+                                <h3>Meiosis II</h3>
+                                <p class="subtitle">Equational Division (like Mitosis)</p>
+                                <ul>
+                                    <li><strong>Prophase II:</strong> Chromosomes condense again</li>
+                                    <li><strong>Metaphase II:</strong> Chromosomes align at equator</li>
+                                    <li><strong>Anaphase II:</strong> Sister chromatids separate</li>
+                                    <li><strong>Telophase II:</strong> Four haploid cells form</li>
+                                </ul>
+                                <p class="key-point"><strong>Result:</strong> 4 haploid gametes (each with single chromosomes)</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 10: Quiz 3 - Meiosis -->
+                <section class="slide quiz-slide" data-slide="10">
+                    <div class="slide-content">
+                        <h2>Knowledge Check: Meiosis</h2>
+                        <div class="quiz-container">
+                            <div class="question">
+                                <p class="question-text">What is the main purpose of meiosis?</p>
+                                <div class="options">
+                                    <button class="option-btn" data-answer="wrong" data-feedback="Growth and repair are functions of mitosis, not meiosis.">A) Growth and repair of body tissues</button>
+                                    <button class="option-btn" data-answer="correct" data-feedback="Correct! Meiosis produces gametes (sex cells) with half the chromosome number, essential for sexual reproduction.">B) Production of sex cells for reproduction</button>
+                                    <button class="option-btn" data-answer="wrong" data-feedback="Creating identical cells is the function of mitosis.">C) Creating genetically identical cells</button>
+                                    <button class="option-btn" data-answer="wrong" data-feedback="Meiosis reduces chromosome number; it doesn't maintain it.">D) Maintaining chromosome number</button>
+                                </div>
+                                <div class="feedback" id="quiz3-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Slide 11: Mitosis vs Meiosis Comparison -->
+                <section class="slide" data-slide="11">
+                    <div class="slide-content">
+                        <h2>Mitosis vs. Meiosis: Key Differences</h2>
+                        <table class="comparison-table-full">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Mitosis</th>
+                                    <th>Meiosis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Purpose</strong></td>
+                                    <td>Growth, repair, asexual reproduction</td>
+                                    <td>Sexual reproduction</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cell Type</strong></td>
+                                    <td>Somatic (body) cells</td>
+                                    <td>Germ (reproductive) cells</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Number of Divisions</strong></td>
+                                    <td>One</td>
+                                    <td>Two (Meiosis I & II)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Daughter Cells Produced</strong></td>
+                                    <td>2</td>
+                                    <td>4</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Chromosome Number</strong></td>
+                                    <td>Same as parent (diploid → diploid)</td>
+                                    <td>Half of parent (diploid → haploid)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Genetic Variation</strong></td>
+                                    <td>Identical to parent</td>
+                                    <td>Genetically unique</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Crossing Over</strong></td>
+                                    <td>No</td>
+                                    <td>Yes (Prophase I)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Slide 12: Summary & Final Quiz -->
+                <section class="slide" data-slide="12">
+                    <div class="slide-content">
+                        <h2>Summary & Final Challenge</h2>
+                        <div class="summary-content">
+                            <h3>What We've Learned</h3>
+                            <ul class="summary-list">
+                                <li>✓ The cell cycle includes interphase and M phase</li>
+                                <li>✓ Mitosis produces 2 identical diploid cells (PMAT)</li>
+                                <li>✓ Meiosis produces 4 unique haploid gametes</li>
+                                <li>✓ Meiosis involves two divisions and creates genetic variation</li>
+                            </ul>
+                        </div>
+                        <div class="quiz-container">
+                            <div class="question">
+                                <p class="question-text"><strong>Final Question:</strong> A cell with 20 chromosomes undergoes meiosis. How many chromosomes will each gamete have?</p>
+                                <div class="options">
+                                    <button class="option-btn" data-answer="wrong" data-feedback="This would be the result of mitosis, not meiosis.">A) 20 chromosomes</button>
+                                    <button class="option-btn" data-answer="correct" data-feedback="Correct! Meiosis reduces the chromosome number by half, so each gamete would have 10 chromosomes (haploid).">B) 10 chromosomes</button>
+                                    <button class="option-btn" data-answer="wrong" data-feedback="Meiosis doesn't double the chromosome number.">C) 40 chromosomes</button>
+                                    <button class="option-btn" data-answer="wrong" data-feedback="Meiosis produces exactly 4 gametes, each with half the chromosomes.">D) 5 chromosomes</button>
+                                </div>
+                                <div class="feedback" id="quiz4-feedback"></div>
+                            </div>
+                        </div>
+                        <div class="completion-message hidden" id="completionMessage">
+                            <h3>🎉 Congratulations!</h3>
+                            <p>You've completed the Cell Division presentation!</p>
+                            <p class="score-display">Your Score: <span id="finalScore">0/4</span></p>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+
+        <!-- Navigation Controls -->
+        <nav class="slide-controls">
+            <button class="nav-btn prev-btn" id="prevBtn" aria-label="Previous slide">
+                ← Previous
+            </button>
+            <div class="slide-indicators" id="slideIndicators">
+                <!-- Dynamically generated -->
+            </div>
+            <button class="nav-btn next-btn" id="nextBtn" aria-label="Next slide">
+                Next →
+            </button>
+        </nav>
+
+        <!-- Keyboard shortcuts info -->
+        <div class="shortcuts-info">
+            <p>Keyboard shortcuts: ← → arrows to navigate | Esc to show shortcuts</p>
+        </div>
+    </div>
+
+    <script src="js/activity.js"></script>
+</body>
+</html>

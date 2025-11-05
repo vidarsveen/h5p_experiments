@@ -1,0 +1,967 @@
+/* ===================================
+   Cell Division Interactive Slides
+   Standalone Web Application
+   =================================== */
+
+/* ===== RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    color: #333;
+}
+
+/* ===== PRESENTATION CONTAINER ===== */
+.presentation-container {
+    width: 100%;
+    max-width: 1200px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 700px;
+}
+
+/* ===== HEADER ===== */
+.presentation-header {
+    background: linear-gradient(135deg, #4a5899 0%, #5d4a7c 100%);
+    color: white;
+    padding: 25px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.presentation-header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+}
+
+.progress-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.progress-bar {
+    width: 200px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 8.33%; /* 1/12 slides */
+    background: linear-gradient(90deg, #48c774, #3298dc);
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.progress-text {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* ===== SLIDES WRAPPER ===== */
+.slides-wrapper {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    background: #f8f9fa;
+}
+
+.slides {
+    display: flex;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ===== INDIVIDUAL SLIDE ===== */
+.slide {
+    min-width: 100%;
+    padding: 50px 60px;
+    display: flex;
+    flex-direction: column;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.slide.active {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.slide-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.slide-content h2 {
+    font-size: 2.5rem;
+    color: #4a5899;
+    margin-bottom: 15px;
+    border-bottom: 3px solid #667eea;
+    padding-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.3rem;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 30px;
+}
+
+.slide-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #555;
+    margin-bottom: 20px;
+}
+
+/* ===== INTRO CONTENT ===== */
+.intro-content {
+    margin: 30px 0;
+}
+
+.feature-list {
+    list-style: none;
+    padding: 0;
+}
+
+.feature-list li {
+    font-size: 1.2rem;
+    padding: 15px 20px;
+    margin: 10px 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 10px;
+    border-left: 5px solid #667eea;
+}
+
+.slide-note {
+    margin-top: 30px;
+    padding: 20px;
+    background: #fff3cd;
+    border-left: 5px solid #ffc107;
+    border-radius: 5px;
+}
+
+/* ===== DIAGRAMS ===== */
+.diagram-container {
+    margin: 30px 0;
+}
+
+.cell-cycle-diagram {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.cycle-phase {
+    flex: 1;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.cycle-phase.interphase {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.cycle-phase.mitosis {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.cycle-phase h3 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.cycle-phase p {
+    font-size: 1.1rem;
+    color: white;
+    margin: 10px 0;
+}
+
+.cycle-phase small {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* ===== SPLIT CONTENT ===== */
+.split-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin: 30px 0;
+}
+
+.content-left h3,
+.content-right h3 {
+    color: #4a5899;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.content-left ul,
+.content-right ul {
+    list-style-position: inside;
+    color: #555;
+}
+
+.content-left li,
+.content-right li {
+    margin: 10px 0;
+    padding-left: 10px;
+}
+
+.info-box {
+    padding: 25px;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border-radius: 12px;
+    border: 2px solid #00acc1;
+}
+
+.info-box h4 {
+    color: #00838f;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.formula {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin: 20px 0;
+    color: #00838f;
+    font-family: 'Courier New', monospace;
+}
+
+.note {
+    font-size: 0.95rem;
+    font-style: italic;
+    color: #555;
+}
+
+/* ===== PHASES GRID ===== */
+.phases-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+    margin: 30px 0;
+}
+
+.phase-card {
+    background: white;
+    border-radius: 12px;
+    padding: 25px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e0e0e0;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.phase-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.phase-card[data-phase="prophase"] {
+    border-top: 4px solid #ff6b6b;
+}
+
+.phase-card[data-phase="metaphase"] {
+    border-top: 4px solid #4ecdc4;
+}
+
+.phase-card[data-phase="anaphase"] {
+    border-top: 4px solid #45b7d1;
+}
+
+.phase-card[data-phase="telophase"] {
+    border-top: 4px solid #96ceb4;
+}
+
+.phase-visual {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    margin: 0 auto 15px;
+}
+
+.phase-card[data-phase="prophase"] .phase-visual {
+    background: #ff6b6b;
+}
+
+.phase-card[data-phase="metaphase"] .phase-visual {
+    background: #4ecdc4;
+}
+
+.phase-card[data-phase="anaphase"] .phase-visual {
+    background: #45b7d1;
+}
+
+.phase-card[data-phase="telophase"] .phase-visual {
+    background: #96ceb4;
+}
+
+.phase-card h3 {
+    text-align: center;
+    color: #4a5899;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.phase-card ul {
+    list-style: none;
+    padding: 0;
+}
+
+.phase-card li {
+    padding: 8px 0;
+    padding-left: 20px;
+    position: relative;
+    color: #555;
+}
+
+.phase-card li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #667eea;
+    font-weight: bold;
+}
+
+.mnemonic {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #667eea;
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0f3ff;
+    border-radius: 8px;
+}
+
+/* ===== INTERACTIVE DIAGRAMS ===== */
+.interactive-diagrams {
+    display: flex;
+    gap: 30px;
+    justify-content: space-around;
+    margin: 40px 0;
+}
+
+.clickable-diagram {
+    flex: 1;
+    text-align: center;
+}
+
+.diagram-placeholder {
+    margin-bottom: 15px;
+}
+
+.cell-diagram {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    border: 3px solid #4a5899;
+    border-radius: 50%;
+    position: relative;
+    background: radial-gradient(circle, #e3f2fd 0%, #bbdefb 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Simplified chromosome representations */
+.chromosomes-metaphase {
+    width: 80px;
+    height: 4px;
+    background: #4a5899;
+    position: relative;
+}
+
+.chromosomes-metaphase::before,
+.chromosomes-metaphase::after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 4px;
+    background: #4a5899;
+}
+
+.chromosomes-metaphase::before {
+    transform: translateY(-15px);
+}
+
+.chromosomes-metaphase::after {
+    transform: translateY(15px);
+}
+
+.chromosomes-anaphase {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.chromosomes-anaphase::before,
+.chromosomes-anaphase::after {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 60px;
+    background: #4a5899;
+    border-radius: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.chromosomes-anaphase::before {
+    left: 20px;
+}
+
+.chromosomes-anaphase::after {
+    right: 20px;
+}
+
+.chromosomes-prophase {
+    width: 120px;
+    height: 120px;
+    position: relative;
+}
+
+.chromosomes-prophase::before,
+.chromosomes-prophase::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #4a5899;
+    border-radius: 5px;
+    opacity: 0.7;
+}
+
+.chromosomes-prophase::before {
+    top: 20px;
+    left: 30px;
+    transform: rotate(15deg);
+}
+
+.chromosomes-prophase::after {
+    bottom: 20px;
+    right: 30px;
+    transform: rotate(-25deg);
+}
+
+.reveal-btn {
+    padding: 10px 25px;
+    background: #667eea;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.reveal-btn:hover {
+    background: #5568d3;
+    transform: scale(1.05);
+}
+
+.reveal-btn:active {
+    transform: scale(0.98);
+}
+
+.phase-answer {
+    margin-top: 15px;
+    padding: 15px;
+    background: #e8f5e9;
+    border-radius: 8px;
+    border: 2px solid #4caf50;
+}
+
+.phase-answer.hidden {
+    display: none;
+}
+
+.phase-answer strong {
+    color: #2e7d32;
+    font-size: 1.2rem;
+    display: block;
+    margin-bottom: 5px;
+}
+
+/* ===== QUIZ SLIDES ===== */
+.quiz-container {
+    max-width: 800px;
+    margin: 40px auto;
+}
+
+.question {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.question-text {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.option-btn {
+    padding: 18px 25px;
+    font-size: 1.1rem;
+    text-align: left;
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #333;
+}
+
+.option-btn:hover {
+    background: #e9ecef;
+    border-color: #667eea;
+    transform: translateX(5px);
+}
+
+.option-btn.correct {
+    background: #d4edda;
+    border-color: #28a745;
+    color: #155724;
+}
+
+.option-btn.wrong {
+    background: #f8d7da;
+    border-color: #dc3545;
+    color: #721c24;
+}
+
+.option-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.feedback {
+    margin-top: 25px;
+    padding: 20px;
+    border-radius: 10px;
+    font-size: 1.1rem;
+    display: none;
+}
+
+.feedback.show {
+    display: block;
+}
+
+.feedback.correct {
+    background: #d4edda;
+    border: 2px solid #28a745;
+    color: #155724;
+}
+
+.feedback.wrong {
+    background: #f8d7da;
+    border: 2px solid #dc3545;
+    color: #721c24;
+}
+
+/* ===== COMPARISON TABLE ===== */
+.comparison-table {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin: 30px 0;
+}
+
+.comparison-column {
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-column h3 {
+    color: #4a5899;
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.comparison-column .subtitle {
+    font-size: 1rem;
+    color: #888;
+    margin-bottom: 20px;
+}
+
+.comparison-column ul {
+    list-style: none;
+    padding: 0;
+}
+
+.comparison-column li {
+    padding: 12px 0;
+    border-bottom: 1px solid #e0e0e0;
+    color: #555;
+}
+
+.comparison-column li:last-child {
+    border-bottom: none;
+}
+
+.key-point {
+    margin-top: 20px;
+    padding: 15px;
+    background: #e3f2fd;
+    border-left: 4px solid #2196f3;
+    border-radius: 5px;
+}
+
+/* ===== FULL COMPARISON TABLE ===== */
+.comparison-table-full {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 30px 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-table-full thead {
+    background: linear-gradient(135deg, #4a5899 0%, #5d4a7c 100%);
+    color: white;
+}
+
+.comparison-table-full th {
+    padding: 20px;
+    text-align: left;
+    font-size: 1.2rem;
+}
+
+.comparison-table-full td {
+    padding: 18px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    color: #555;
+}
+
+.comparison-table-full tbody tr:hover {
+    background: #f5f7fa;
+}
+
+.comparison-table-full tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ===== SUMMARY ===== */
+.summary-content {
+    margin: 30px 0;
+}
+
+.summary-list {
+    list-style: none;
+    padding: 0;
+}
+
+.summary-list li {
+    font-size: 1.2rem;
+    padding: 15px 20px;
+    margin: 12px 0;
+    background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+    border-radius: 10px;
+    border-left: 5px solid #4caf50;
+}
+
+.completion-message {
+    text-align: center;
+    margin-top: 40px;
+    padding: 40px;
+    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.completion-message.hidden {
+    display: none;
+}
+
+.completion-message h3 {
+    font-size: 2.5rem;
+    color: #d84315;
+    margin-bottom: 15px;
+}
+
+.score-display {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #4a5899;
+    margin-top: 20px;
+}
+
+.score-display span {
+    font-size: 2rem;
+    color: #28a745;
+}
+
+/* ===== NAVIGATION CONTROLS ===== */
+.slide-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 25px 40px;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.nav-btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.nav-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+}
+
+.nav-btn:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ===== SLIDE INDICATORS ===== */
+.slide-indicators {
+    display: flex;
+    gap: 8px;
+}
+
+.indicator-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #dee2e6;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator-dot:hover {
+    background: #adb5bd;
+    transform: scale(1.2);
+}
+
+.indicator-dot.active {
+    background: #667eea;
+    width: 30px;
+    border-radius: 6px;
+}
+
+/* ===== SHORTCUTS INFO ===== */
+.shortcuts-info {
+    text-align: center;
+    padding: 15px;
+    background: #e9ecef;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .presentation-header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+    }
+
+    .presentation-header h1 {
+        font-size: 1.4rem;
+    }
+
+    .progress-bar {
+        width: 150px;
+    }
+
+    .slide {
+        padding: 30px 25px;
+    }
+
+    .slide-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .split-content {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .phases-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cell-cycle-diagram {
+        flex-direction: column;
+    }
+
+    .comparison-table {
+        grid-template-columns: 1fr;
+    }
+
+    .interactive-diagrams {
+        flex-direction: column;
+    }
+
+    .slide-controls {
+        padding: 20px;
+    }
+
+    .nav-btn {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    .slide-indicators {
+        display: none;
+    }
+
+    .comparison-table-full {
+        font-size: 0.85rem;
+    }
+
+    .comparison-table-full th,
+    .comparison-table-full td {
+        padding: 12px 10px;
+    }
+}
+
+/* ===== ACCESSIBILITY ===== */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+*:focus {
+    outline: 3px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.slide.active .slide-content > * {
+    animation: slideIn 0.6s ease forwards;
+}
+
+.slide.active .slide-content > *:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.slide.active .slide-content > *:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.slide.active .slide-content > *:nth-child(4) {
+    animation-delay: 0.3s;
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    body {
+        background: white;
+    }
+
+    .presentation-container {
+        box-shadow: none;
+        max-width: 100%;
+    }
+
+    .slide-controls,
+    .shortcuts-info,
+    .progress-container {
+        display: none;
+    }
+
+    .slide {
+        page-break-after: always;
+        opacity: 1;
+        transform: none;
+    }
+
+    .nav-btn,
+    .reveal-btn,
+    .option-btn {
+        display: none;
+    }
+}

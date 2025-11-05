@@ -78,8 +78,8 @@ h5p_experiments/
 │   │   ├── assets/
 │   │   │   └── images/
 │   │   └── README.md
-│   ├── 02_projectile_motion_video/            # Planned
-│   ├── 03_cell_division_slides/               # Planned
+│   ├── 02_projectile_motion_video/            # ✅ Complete
+│   ├── 03_cell_division_slides/               # ✅ Complete
 │   ├── 04_calculus_quiz/                      # Planned
 │   ├── 05_algorithm_scenario/                 # Planned
 │   ├── 06_functional_groups_flashcards/       # Planned
@@ -204,10 +204,54 @@ All activities use pure HTML/CSS/JavaScript - no build tools needed.
 
 ---
 
+### 3. Interactive Slides - Cell Division ✅
+
+**Path**: `activities/03_cell_division_slides/index.html`
+**Subject**: Biology - Cell Biology
+**Topic**: Mitosis and Meiosis
+
+**Quick Start**: Just open `index.html` in any browser!
+
+**Features**:
+- 12-slide interactive presentation with smooth transitions
+- Embedded knowledge checks (4 quiz questions throughout)
+- Interactive diagrams with click-to-reveal functionality
+- Comprehensive coverage of cell division concepts
+- Visual progress tracking with slide indicators
+- Keyboard navigation (← → arrows, Home, End)
+- Progress persistence via localStorage
+- Score tracking and completion certificate
+- Fully responsive design for all devices
+- Print-friendly for study notes
+
+**Educational Focus**:
+- The Cell Cycle (Interphase: G1, S, G2 phases)
+- Mitosis phases: PMAT (Prophase, Metaphase, Anaphase, Telophase)
+- Meiosis I and Meiosis II divisions
+- Mitosis vs. Meiosis comparison
+- Purpose and significance of cell division
+- Genetic variation through crossing over
+
+**Interactive Elements**:
+1. Cell cycle diagram visualization
+2. Phase identification exercises
+3. Click-to-reveal mitosis diagrams
+4. Embedded quizzes with immediate feedback
+5. Comprehensive comparison table
+6. Summary and final assessment
+
+**Technology**: Pure HTML5/CSS3/JavaScript (ES6) + LocalStorage API
+
+**Estimated Time**: 15-20 minutes to complete
+
+**Try it**: Open `activities/03_cell_division_slides/index.html` in your browser!
+
+---
+
 ## Development Roadmap
 
 - **Phase 1**: Setup and planning (Week 1) ✓ - **REVISED for standalone approach**
-- **Phase 2**: Content development (Weeks 2-4) - **IN PROGRESS** (2/10 activities complete - 20%)
+- **Phase 2**: Content development (Weeks 2-4) - **IN PROGRESS** (3/10 activities complete - 30%)
 - **Phase 3**: Testing and refinement (Week 5)
 - **Phase 4**: Documentation and deployment (Week 6)
 
@@ -275,7 +319,7 @@ For questions about this demonstration project, please open an issue in the repo
 
 ---
 
-**Project Status**: Phase 2 - Building Activities (2/10 complete ✅✅) 20% Done
+**Project Status**: Phase 2 - Building Activities (3/10 complete ✅✅✅) 30% Done
 **Last Updated**: 2025-11-05
-**Version**: 2.2 (Standalone Edition - Chemistry + Physics Complete!)
+**Version**: 2.3 (Standalone Edition - Chemistry + Physics + Biology Complete!)
 **Approach**: Pure HTML/CSS/JavaScript - No H5P platform required
