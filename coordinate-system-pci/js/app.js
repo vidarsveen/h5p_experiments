@@ -179,6 +179,68 @@ function toggleGridAction() {
 }
 
 /**
+ * Zoom in wrapper with feedback
+ */
+function zoomInAction() {
+    const success = coordinateSystem.zoomIn();
+    if (success) {
+        showMessage('🔍+ Zoomed in', 'info');
+        updateStatus('Zoomed in');
+    } else {
+        showMessage('🔍 Maximum zoom reached', 'info');
+    }
+}
+
+/**
+ * Zoom out wrapper with feedback
+ */
+function zoomOutAction() {
+    const success = coordinateSystem.zoomOut();
+    if (success) {
+        showMessage('🔍− Zoomed out', 'info');
+        updateStatus('Zoomed out');
+    } else {
+        showMessage('🔍 Minimum zoom reached', 'info');
+    }
+}
+
+/**
+ * Export canvas as PNG image
+ */
+function exportCanvasImage() {
+    try {
+        // Get the p5.js canvas element
+        const canvas = document.querySelector('#canvasContainer canvas');
+
+        if (!canvas) {
+            showMessage('❌ Canvas not found', 'error');
+            return;
+        }
+
+        // Convert canvas to data URL
+        const dataURL = canvas.toDataURL('image/png');
+
+        // Create download link
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = `coordinate-system-${Date.now()}.png`;
+
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        showMessage('💾 Image exported!', 'success');
+        updateStatus('Image saved');
+
+        console.log('💾 Canvas exported as PNG');
+    } catch (error) {
+        showMessage('❌ Export failed: ' + error.message, 'error');
+        console.error('Export error:', error);
+    }
+}
+
+/**
  * Show a temporary message
  */
 function showMessage(message, type = 'info') {

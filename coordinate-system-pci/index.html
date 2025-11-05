@@ -56,22 +56,26 @@
                 <div class="canvas-header">
                     <h2>Coordinate System</h2>
                     <div class="canvas-controls">
-                        <button onclick="resetSystem()" title="Reset View">🔄</button>
+                        <button onclick="zoomInAction()" title="Zoom In">🔍+</button>
+                        <button onclick="zoomOutAction()" title="Zoom Out">🔍−</button>
+                        <button onclick="resetSystem()" title="Reset View & Zoom">🔄</button>
                         <button onclick="toggleGridAction()" title="Toggle Grid">⊞</button>
                         <button onclick="undoAction()" title="Undo (Ctrl+Z)">↶</button>
                         <button onclick="redoAction()" title="Redo (Ctrl+Shift+Z)">↷</button>
+                        <button onclick="exportCanvasImage()" title="Export as PNG">💾</button>
                     </div>
                 </div>
                 <div id="canvasContainer"></div>
                 <div class="canvas-info">
                     <span id="mouseCoords">Mouse: (0, 0)</span>
                     <span id="canvasStatus">Ready</span>
+                    <span style="color: #888; font-size: 0.85em;">| Shift+Drag to Pan | Scroll to Zoom</span>
                 </div>
             </section>
         </main>
 
         <footer>
-            <p>Interactive Coordinate System PCI - Prototype v0.1</p>
+            <p>Interactive Coordinate System PCI - Prototype v0.2</p>
         </footer>
     </div>
 

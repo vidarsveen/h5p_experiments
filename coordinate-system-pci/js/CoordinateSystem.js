@@ -35,6 +35,18 @@ class CoordinateSystem {
         this.draggedPoint = null;
         this.hoveredPoint = null;
 
+        // Pan/Zoom state
+        this.isPanning = false;
+        this.panStartX = 0;
+        this.panStartY = 0;
+        this.viewportStartXMin = 0;
+        this.viewportStartXMax = 0;
+        this.viewportStartYMin = 0;
+        this.viewportStartYMax = 0;
+        this.initialViewport = null; // Store original viewport for reset
+        this.zoomMin = 0.1;  // Minimum zoom (10%)
+        this.zoomMax = 10;   // Maximum zoom (1000%)
+
         // History for undo/redo
         this.history = [];
         this.historyIndex = -1;
@@ -87,6 +99,9 @@ class CoordinateSystem {
 
                 // Update mouse coordinates display
                 self.updateMouseDisplay(p);
+
+                // Update cursor based on interaction state
+                self.updateCursor(p);
             };
 
             p.mousePressed = () => {
@@ -103,6 +118,10 @@ class CoordinateSystem {
 
             p.mouseMoved = () => {
                 self.handleMouseMoved(p);
+            };
+
+            p.mouseWheel = (event) => {
+                return self.handleMouseWheel(p, event);
             };
         };
 
@@ -123,6 +142,14 @@ class CoordinateSystem {
             this.yMin = config.viewport.yMin || -10;
             this.yMax = config.viewport.yMax || 10;
         }
+
+        // Store initial viewport for reset
+        this.initialViewport = {
+            xMin: this.xMin,
+            xMax: this.xMax,
+            yMin: this.yMin,
+            yMax: this.yMax
+        };
 
         // Set grid/axes visibility
         if (config.grid) {
@@ -521,10 +548,35 @@ class CoordinateSystem {
         const isDragged = this.draggedPoint === point;
         const radius = isHovered || isDragged ? point.radius * 1.3 : point.radius;
 
+        // Draw shadow if dragging
+        if (isDragged) {
+            p.noStroke();
+            p.fill(0, 0, 0, 80);
+            p.ellipse(sx + 3, sy + 3, radius * 2, radius * 2);
+        }
+
+        // Draw point
         p.fill(point.color);
         p.stroke(0);
-        p.strokeWeight(isDragged ? 3 : 2);
+        p.strokeWeight(isDragged ? 3 : (isHovered ? 2.5 : 2));
         p.ellipse(sx, sy, radius * 2, radius * 2);
+
+        // Show coordinates while dragging
+        if (isDragged) {
+            p.fill(0);
+            p.noStroke();
+            p.textAlign(p.CENTER, p.TOP);
+            p.textSize(12);
+            p.textStyle(p.NORMAL);
+            // Background for text
+            const coordText = `(${point.x.toFixed(2)}, ${point.y.toFixed(2)})`;
+            const textW = p.textWidth(coordText);
+            p.fill(255, 255, 255, 200);
+            p.rect(sx - textW/2 - 4, sy + radius + 5, textW + 8, 18, 4);
+            // Text
+            p.fill(0);
+            p.text(coordText, sx, sy + radius + 8);
+        }
 
         // Label
         if (point.label) {
@@ -536,6 +588,14 @@ class CoordinateSystem {
             p.text(point.label, sx, sy - radius - 5);
         }
 
+        // Highlight if hovered and draggable
+        if (isHovered && point.draggable) {
+            p.noFill();
+            p.stroke(point.color);
+            p.strokeWeight(2);
+            p.ellipse(sx, sy, (radius + 4) * 2, (radius + 4) * 2);
+        }
+
         p.pop();
     }
 
@@ -545,6 +605,19 @@ class CoordinateSystem {
     handleMousePressed(p) {
         const worldX = this.screenToWorldX(p.mouseX);
         const worldY = this.screenToWorldY(p.mouseY);
+
+        // Check for pan mode (Shift+click or Space+click or middle mouse)
+        if (p.keyIsDown(p.SHIFT) || p.keyIsDown(32) || p.mouseButton === p.CENTER) {
+            this.isPanning = true;
+            this.panStartX = p.mouseX;
+            this.panStartY = p.mouseY;
+            this.viewportStartXMin = this.xMin;
+            this.viewportStartXMax = this.xMax;
+            this.viewportStartYMin = this.yMin;
+            this.viewportStartYMax = this.yMax;
+            console.log('🖐️ Pan mode started');
+            return;
+        }
 
         // Check if clicking on a point
         for (let point of this.points) {
@@ -564,6 +637,24 @@ class CoordinateSystem {
      * Handle mouse dragged
      */
     handleMouseDragged(p) {
+        // Handle panning
+        if (this.isPanning) {
+            const dx = p.mouseX - this.panStartX;
+            const dy = p.mouseY - this.panStartY;
+
+            // Convert screen delta to world delta
+            const worldDx = (dx / this.canvasWidth) * (this.viewportStartXMax - this.viewportStartXMin);
+            const worldDy = (dy / this.canvasHeight) * (this.viewportStartYMax - this.viewportStartYMin);
+
+            // Update viewport (note: y is inverted in screen coordinates)
+            this.xMin = this.viewportStartXMin - worldDx;
+            this.xMax = this.viewportStartXMax - worldDx;
+            this.yMin = this.viewportStartYMin + worldDy;
+            this.yMax = this.viewportStartYMax + worldDy;
+
+            return;
+        }
+
         if (!this.draggedPoint) return;
 
         let worldX = this.screenToWorldX(p.mouseX);
@@ -575,6 +666,37 @@ class CoordinateSystem {
                 const tolerance = this.draggedPoint.snap.tolerance || 0.3;
                 worldX = Math.round(worldX / tolerance) * tolerance;
                 worldY = Math.round(worldY / tolerance) * tolerance;
+            } else if (this.draggedPoint.snap.type === 'points') {
+                // Snap to other points
+                const tolerance = this.draggedPoint.snap.tolerance || 0.5;
+                const targets = this.draggedPoint.snap.targets || []; // Array of point IDs
+
+                let closestPoint = null;
+                let closestDist = tolerance;
+
+                // Find closest target point within tolerance
+                this.points.forEach(point => {
+                    if (point === this.draggedPoint) return; // Skip self
+
+                    // Check if this point is in targets list (or snap to all if no targets specified)
+                    if (targets.length === 0 || targets.includes(point.id)) {
+                        const dist = Math.sqrt(
+                            (worldX - point.x) ** 2 +
+                            (worldY - point.y) ** 2
+                        );
+
+                        if (dist < closestDist) {
+                            closestDist = dist;
+                            closestPoint = point;
+                        }
+                    }
+                });
+
+                // Snap to closest point if found
+                if (closestPoint) {
+                    worldX = closestPoint.x;
+                    worldY = closestPoint.y;
+                }
             }
         }
 
@@ -599,6 +721,12 @@ class CoordinateSystem {
      * Handle mouse released
      */
     handleMouseReleased(p) {
+        if (this.isPanning) {
+            this.isPanning = false;
+            console.log('🖐️ Pan mode ended');
+            return;
+        }
+
         if (this.draggedPoint) {
             // Save state to history
             this.saveState();
@@ -624,6 +752,48 @@ class CoordinateSystem {
                 break;
             }
         }
+    }
+
+    /**
+     * Handle mouse wheel for zoom
+     */
+    handleMouseWheel(p, event) {
+        // Prevent page scroll
+        event.preventDefault();
+
+        // Zoom factor
+        const zoomFactor = event.delta > 0 ? 1.1 : 0.9;
+
+        // Get mouse position in world coordinates (zoom towards mouse)
+        const mouseWorldX = this.screenToWorldX(p.mouseX);
+        const mouseWorldY = this.screenToWorldY(p.mouseY);
+
+        // Calculate new viewport size
+        const width = (this.xMax - this.xMin) * zoomFactor;
+        const height = (this.yMax - this.yMin) * zoomFactor;
+
+        // Check zoom limits
+        const currentZoom = 20 / (this.xMax - this.xMin); // Assuming initial range is 20
+        const newZoom = 20 / width;
+
+        if (newZoom < this.zoomMin || newZoom > this.zoomMax) {
+            return false; // Don't allow zoom beyond limits
+        }
+
+        // Calculate mouse position as ratio in current viewport
+        const mouseRatioX = (mouseWorldX - this.xMin) / (this.xMax - this.xMin);
+        const mouseRatioY = (mouseWorldY - this.yMin) / (this.yMax - this.yMin);
+
+        // Set new viewport centered on mouse position
+        this.xMin = mouseWorldX - width * mouseRatioX;
+        this.xMax = mouseWorldX + width * (1 - mouseRatioX);
+        this.yMin = mouseWorldY - height * mouseRatioY;
+        this.yMax = mouseWorldY + height * (1 - mouseRatioY);
+
+        console.log(`🔍 Zoom: ${(newZoom * 100).toFixed(0)}%`);
+
+        // Return false to prevent default browser behavior
+        return false;
     }
 
     /**
@@ -682,6 +852,28 @@ class CoordinateSystem {
         const coordsElement = document.getElementById('mouseCoords');
         if (coordsElement) {
             coordsElement.textContent = `Mouse: (${worldX.toFixed(2)}, ${worldY.toFixed(2)})`;
+        }
+    }
+
+    /**
+     * Update cursor based on interaction state
+     */
+    updateCursor(p) {
+        if (p.mouseX < 0 || p.mouseX > this.canvasWidth || p.mouseY < 0 || p.mouseY > this.canvasHeight) {
+            return;
+        }
+
+        if (this.isPanning) {
+            p.cursor('move');
+        } else if (this.draggedPoint) {
+            p.cursor('grabbing');
+        } else if (p.keyIsDown(p.SHIFT) || p.keyIsDown(32)) {
+            // Show move cursor when shift/space is held (pan mode ready)
+            p.cursor('move');
+        } else if (this.hoveredPoint && this.hoveredPoint.draggable) {
+            p.cursor('grab');
+        } else {
+            p.cursor('crosshair');
         }
     }
 
@@ -874,6 +1066,13 @@ class CoordinateSystem {
     resetView() {
         if (this.config) {
             this.loadConfig(this.config);
+        } else if (this.initialViewport) {
+            // Reset viewport to initial values
+            this.xMin = this.initialViewport.xMin;
+            this.xMax = this.initialViewport.xMax;
+            this.yMin = this.initialViewport.yMin;
+            this.yMax = this.initialViewport.yMax;
+            console.log('🔄 Viewport reset to initial state');
         }
     }
 
@@ -884,6 +1083,60 @@ class CoordinateSystem {
         this.showGrid = !this.showGrid;
         console.log(`⊞ Grid ${this.showGrid ? 'ON' : 'OFF'}`);
         return this.showGrid;
+    }
+
+    /**
+     * Zoom in (towards center)
+     */
+    zoomIn() {
+        const centerX = (this.xMin + this.xMax) / 2;
+        const centerY = (this.yMin + this.yMax) / 2;
+
+        const zoomFactor = 0.8; // Zoom in by 20%
+        const width = (this.xMax - this.xMin) * zoomFactor;
+        const height = (this.yMax - this.yMin) * zoomFactor;
+
+        // Check zoom limits
+        const newZoom = 20 / width;
+        if (newZoom > this.zoomMax) {
+            console.log('🔍 Max zoom reached');
+            return false;
+        }
+
+        this.xMin = centerX - width / 2;
+        this.xMax = centerX + width / 2;
+        this.yMin = centerY - height / 2;
+        this.yMax = centerY + height / 2;
+
+        console.log(`🔍+ Zoom in: ${(newZoom * 100).toFixed(0)}%`);
+        return true;
+    }
+
+    /**
+     * Zoom out (from center)
+     */
+    zoomOut() {
+        const centerX = (this.xMin + this.xMax) / 2;
+        const centerY = (this.yMin + this.yMax) / 2;
+
+        const zoomFactor = 1.25; // Zoom out by 25%
+        const width = (this.xMax - this.xMin) * zoomFactor;
+        const height = (this.yMax - this.yMin) * zoomFactor;
+
+        // Check zoom limits
+        const newZoom = 20 / width;
+        if (newZoom < this.zoomMin) {
+            console.log('🔍 Min zoom reached');
+            return false;
+        }
+
+        this.xMin = centerX - width / 2;
+        this.xMax = centerX + width / 2;
+        this.yMin = centerY - height / 2;
+        this.yMax = centerY + height / 2;
+
+        console.log(`🔍− Zoom out: ${(newZoom * 100).toFixed(0)}%`);
+        return true;
     }
 
     /**
