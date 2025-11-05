@@ -137,16 +137,38 @@ All activities use pure HTML/CSS/JavaScript - no build tools needed.
 
 ## Completed Activities
 
-*Activities will be listed here as they are converted to standalone format*
+### 1. Electron Configuration Builder ✅
 
-**Status**: Currently revising approach from H5P packages to standalone HTML/JS applications
+**Path**: `activities/01_electron_configuration/index.html`
+**Subject**: Chemistry - Atomic Structure
+**Element**: Oxygen (O) - 8 electrons
+
+**Quick Start**: Just open `index.html` in any browser!
+
+**Features**:
+- Interactive HTML5 drag-and-drop
+- 8 electrons to place in correct orbitals (1s, 2s, 2p)
+- Real-time validation and feedback
+- Show hints and show solution functionality
+- Responsive design (desktop, tablet, mobile)
+- Fully accessible (keyboard navigation, ARIA labels)
+- Works offline - no internet required
+
+**Educational Focus**:
+- Aufbau Principle (fill lowest energy first)
+- Hund's Rule (one electron per orbital before pairing)
+- Pauli Exclusion Principle (max 2 per orbital, opposite spins)
+
+**Technology**: Pure HTML5/CSS3/JavaScript (ES6) - No frameworks or dependencies
+
+**Try it**: Open `activities/01_electron_configuration/index.html` in your browser!
 
 ---
 
 ## Development Roadmap
 
 - **Phase 1**: Setup and planning (Week 1) ✓ - **REVISED for standalone approach**
-- **Phase 2**: Content development (Weeks 2-4) - **RESTARTING** (0/10 activities in standalone format)
+- **Phase 2**: Content development (Weeks 2-4) - **IN PROGRESS** (1/10 activities complete)
 - **Phase 3**: Testing and refinement (Week 5)
 - **Phase 4**: Documentation and deployment (Week 6)
 
@@ -214,7 +236,7 @@ For questions about this demonstration project, please open an issue in the repo
 
 ---
 
-**Project Status**: Phase 1 - Planning REVISED for Standalone Approach (Ready to build!)
+**Project Status**: Phase 2 - Building Activities (1/10 complete ✅)
 **Last Updated**: 2025-11-05
-**Version**: 2.0 (Standalone Edition)
+**Version**: 2.1 (Standalone Edition - First Activity Complete!)
 **Approach**: Pure HTML/CSS/JavaScript - No H5P platform required

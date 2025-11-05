@@ -1,0 +1,516 @@
+/* ========================================
+   Electron Configuration Activity Styles
+   ======================================== */
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #2c3e50;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+/* Header */
+.activity-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.activity-header h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+}
+
+/* Instructions */
+.instructions {
+    padding: 30px;
+    background: #f8f9fa;
+    border-bottom: 3px solid #e9ecef;
+}
+
+.instructions h2 {
+    color: #667eea;
+    margin-bottom: 15px;
+}
+
+.instructions ul {
+    margin-left: 20px;
+    line-height: 1.8;
+}
+
+.instructions li {
+    margin-bottom: 10px;
+}
+
+.instructions strong {
+    color: #764ba2;
+}
+
+/* Main Activity Area */
+.activity-area {
+    display: flex;
+    gap: 30px;
+    padding: 30px;
+    background: white;
+}
+
+/* Electron Bank */
+.electron-bank {
+    flex: 0 0 200px;
+    background: #e8f4f8;
+    border: 3px solid #3498db;
+    border-radius: 10px;
+    padding: 20px;
+    height: fit-content;
+}
+
+.electron-bank h3 {
+    color: #2c3e50;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+.bank-subtitle {
+    text-align: center;
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+.electrons-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.electron {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    cursor: grab;
+    user-select: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-weight: bold;
+}
+
+.electron:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.electron:active {
+    cursor: grabbing;
+    transform: scale(0.95);
+}
+
+.electron.dragging {
+    opacity: 0.5;
+    cursor: grabbing;
+}
+
+/* Orbital Diagram */
+.orbital-diagram {
+    flex: 1;
+    position: relative;
+}
+
+.orbital-diagram h3 {
+    color: #2c3e50;
+    margin-bottom: 5px;
+}
+
+.diagram-subtitle {
+    font-size: 0.9em;
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+.energy-axis {
+    position: absolute;
+    left: 0;
+    top: 80px;
+    bottom: 200px;
+    width: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.axis-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 14px;
+    color: #7f8c8d;
+    font-weight: bold;
+}
+
+.orbital-container {
+    margin-left: 50px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.orbital-level {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.orbital-label {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #2c3e50;
+    min-width: 50px;
+}
+
+.orbital-boxes {
+    display: flex;
+    gap: 15px;
+}
+
+.drop-zone {
+    width: 80px;
+    height: 80px;
+    border: 3px dashed #95a5a6;
+    border-radius: 8px;
+    background: #ecf0f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.drop-zone .box-label {
+    position: absolute;
+    top: 5px;
+    font-size: 14px;
+    color: #7f8c8d;
+}
+
+.drop-zone.drag-over {
+    background: #d5e8f7;
+    border-color: #3498db;
+    border-style: solid;
+    transform: scale(1.05);
+}
+
+.drop-zone.filled {
+    background: #d5f4e6;
+    border-color: #27ae60;
+    border-style: solid;
+}
+
+.drop-zone.correct {
+    background: #d5f4e6;
+    border-color: #27ae60;
+    animation: correctPulse 0.5s ease;
+}
+
+.drop-zone.incorrect {
+    background: #fadbd8;
+    border-color: #e74c3c;
+    animation: incorrectShake 0.5s ease;
+}
+
+@keyframes correctPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+@keyframes incorrectShake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+/* Electron in drop zone */
+.drop-zone .electron {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+    margin: 0;
+}
+
+/* Hints Section */
+.hints-section {
+    margin-top: 30px;
+}
+
+.hints-content {
+    margin-top: 15px;
+    padding: 20px;
+    background: #fff9e6;
+    border-left: 4px solid #f39c12;
+    border-radius: 5px;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+.hints-content.hidden {
+    display: none;
+}
+
+.hints-content h4 {
+    color: #f39c12;
+    margin-bottom: 10px;
+}
+
+.hints-content ul {
+    margin-left: 20px;
+    line-height: 1.8;
+}
+
+.hints-content li {
+    margin-bottom: 8px;
+}
+
+/* Control Buttons */
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    padding: 30px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+}
+
+.btn-primary, .btn-secondary {
+    padding: 12px 30px;
+    font-size: 1.1em;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary {
+    background: #95a5a6;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #7f8c8d;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary:active, .btn-secondary:active {
+    transform: translateY(0);
+}
+
+/* Feedback Area */
+.feedback {
+    padding: 20px 30px;
+    min-height: 60px;
+}
+
+.feedback.success {
+    background: #d5f4e6;
+    border-left: 5px solid #27ae60;
+    color: #27ae60;
+}
+
+.feedback.partial {
+    background: #fff3cd;
+    border-left: 5px solid #f39c12;
+    color: #856404;
+}
+
+.feedback.error {
+    background: #fadbd8;
+    border-left: 5px solid #e74c3c;
+    color: #c0392b;
+}
+
+.feedback-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.feedback-icon {
+    font-size: 2em;
+}
+
+.feedback-text h3 {
+    margin-bottom: 5px;
+}
+
+.feedback-score {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+/* Educational Content */
+.educational-content {
+    padding: 40px 30px;
+    background: #f8f9fa;
+    border-top: 3px solid #e9ecef;
+}
+
+.educational-content h2 {
+    color: #667eea;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.learning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.learning-card {
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.learning-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.learning-card h3 {
+    color: #764ba2;
+    margin-bottom: 15px;
+    font-size: 1.3em;
+}
+
+.learning-card p {
+    line-height: 1.8;
+    color: #555;
+}
+
+/* Footer */
+.activity-footer {
+    background: #2c3e50;
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.activity-footer p {
+    margin: 5px 0;
+    opacity: 0.9;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .activity-area {
+        flex-direction: column;
+    }
+
+    .electron-bank {
+        flex: 1 0 auto;
+    }
+
+    .activity-header h1 {
+        font-size: 1.8em;
+    }
+
+    .controls {
+        flex-direction: column;
+    }
+
+    .btn-primary, .btn-secondary {
+        width: 100%;
+    }
+
+    .orbital-container {
+        margin-left: 20px;
+    }
+
+    .drop-zone {
+        width: 60px;
+        height: 60px;
+    }
+
+    .electron {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+
+    .drop-zone .electron {
+        width: 45px;
+        height: 45px;
+        font-size: 20px;
+    }
+
+    .learning-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Accessibility */
+.drop-zone:focus,
+.electron:focus,
+.btn-primary:focus,
+.btn-secondary:focus {
+    outline: 3px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+    }
+
+    .container {
+        box-shadow: none;
+    }
+
+    .controls,
+    .hints-section {
+        display: none;
+    }
+}
