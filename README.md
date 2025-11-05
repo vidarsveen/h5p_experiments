@@ -1,10 +1,12 @@
-# H5P STEM Learning Activities Demonstration
+# H5P STEM Learning Activities - Standalone Edition
 
-A comprehensive demonstration of H5P library capabilities for creating interactive learning activities and formative assessments in STEM education.
+Interactive STEM learning activities built as **standalone HTML/CSS/JavaScript applications**. No platform, plugins, or editors required - just open in a web browser!
 
 ## Overview
 
-This project showcases the versatility of the H5P framework through 10+ interactive learning activities designed for ages 16-18 and undergraduate STEM students. Each activity demonstrates different H5P content types, assessment strategies, and interactive features.
+This project demonstrates formative assessment capabilities using web technologies inspired by H5P patterns. All 10 activities are **self-contained web applications** that run directly in any modern browser, perfect for ages 16-18 and undergraduate STEM students.
+
+**Key Feature**: Each activity is a standalone HTML file that works without any H5P platform, CMS, or special software.
 
 ## Target Audience
 
@@ -21,18 +23,18 @@ This project showcases the versatility of the H5P framework through 10+ interact
 - **Biology**: Cell Division, Human Anatomy
 - **Computer Science**: Algorithms, Programming History
 
-## H5P Content Types Demonstrated
+## Interactive Patterns Demonstrated
 
-1. Interactive Video
-2. Drag and Drop
-3. Course Presentation
-4. Question Set
-5. Branching Scenario
-6. Dialog Cards
-7. Image Hotspots
-8. Fill in the Blanks
-9. Accordion
-10. Timeline
+1. **Interactive Video Player** - Custom HTML5 video with embedded questions
+2. **Drag and Drop** - HTML5 Drag/Drop API with validation
+3. **Interactive Slides** - Custom slideshow with embedded activities
+4. **Quiz Engine** - Multi-format questions with immediate feedback
+5. **Branching Scenario** - Decision tree navigation
+6. **Flashcards** - CSS flip cards with spaced repetition
+7. **Interactive Diagrams** - SVG with clickable hotspots
+8. **Fill in the Blanks** - Cloze-style exercises
+9. **Accordion Reference** - Collapsible content sections
+10. **Timeline** - Interactive chronological display
 
 ## Key Features
 
@@ -60,74 +62,91 @@ This project showcases the versatility of the H5P framework through 10+ interact
 
 ```
 h5p_experiments/
-├── README.md                              # This file
-├── H5P_DEMONSTRATION_PLAN.md              # Detailed implementation plan
-├── electron-configuration.h5p             # ✓ Ready to use!
-├── activities/                            # Individual H5P activities
-│   ├── 01_chemistry_electron_config/      # ✓ COMPLETED
-│   │   ├── h5p.json
-│   │   ├── README.md
-│   │   ├── TESTING_GUIDE.md
-│   │   └── content/
-│   │       ├── content.json
-│   │       └── images/
-│   │           └── orbital-diagram.svg
-│   ├── 02_physics_projectile_motion/      # Planned
-│   ├── 03_biology_cell_division/          # Planned
-│   ├── 04_math_calculus_fundamentals/     # Planned
-│   ├── 05_cs_algorithm_efficiency/        # Planned
-│   ├── 06_chemistry_functional_groups/    # Planned
-│   ├── 07_biology_cardiovascular/         # Planned
-│   ├── 08_physics_thermodynamics/         # Planned
-│   ├── 09_math_trig_identities/           # Planned
-│   └── 10_cs_programming_history/         # Planned
-├── assets/                                # Shared media assets
-│   ├── images/
-│   ├── videos/
-│   └── audio/
-└── docs/                                  # Additional documentation
-    └── technical_setup.md                 # ✓ Complete
+├── README.md                                  # This file
+├── H5P_STANDALONE_PLAN.md                     # ✓ Revised standalone plan
+├── lib/                                       # Shared utilities
+│   ├── drag-drop.js
+│   ├── quiz-component.js
+│   └── common.css
+├── activities/                                # Standalone web activities
+│   ├── 01_electron_configuration/
+│   │   ├── index.html                        # Open this file in browser!
+│   │   ├── css/
+│   │   │   └── style.css
+│   │   ├── js/
+│   │   │   └── activity.js
+│   │   ├── assets/
+│   │   │   └── images/
+│   │   └── README.md
+│   ├── 02_projectile_motion_video/            # Planned
+│   ├── 03_cell_division_slides/               # Planned
+│   ├── 04_calculus_quiz/                      # Planned
+│   ├── 05_algorithm_scenario/                 # Planned
+│   ├── 06_functional_groups_flashcards/       # Planned
+│   ├── 07_cardiovascular_diagram/             # Planned
+│   ├── 08_thermodynamics_blanks/              # Planned
+│   ├── 09_trig_identities_accordion/          # Planned
+│   └── 10_programming_timeline/               # Planned
+└── docs/                                      # Documentation
+    ├── SETUP.md                               # How to run activities
+    ├── DEVELOPER_GUIDE.md                     # Creating new activities
+    └── DEPLOYMENT.md                          # Hosting options
 ```
 
 ## Getting Started
 
-### For Educators
-1. Review the [Demonstration Plan](H5P_DEMONSTRATION_PLAN.md)
-2. Choose activities relevant to your curriculum
-3. Follow setup instructions in `docs/technical_setup.md`
-4. Integrate with your LMS or use standalone
+### For Educators - Quick Start
+
+**Option 1: Run Locally**
+```bash
+# 1. Download or clone this repository
+# 2. Navigate to any activity folder
+# 3. Open index.html in your web browser
+open activities/01_electron_configuration/index.html
+```
+
+**Option 2: Host Online**
+```bash
+# Upload activity folder to any web server
+# Or enable GitHub Pages
+# Students access via URL
+```
+
+No installation, no platform, no login required!
 
 ### For Developers
-1. Install H5P development environment (Lumi, WordPress plugin, or H5P.org)
-2. Clone this repository
-3. Follow the implementation plan for creating each activity
-4. Test and customize for your specific needs
+
+**Requirements**: Text editor + web browser (that's it!)
+
+```bash
+# 1. Clone repository
+git clone [repo-url]
+
+# 2. Create new activity
+mkdir activities/my_activity
+cd activities/my_activity
+
+# 3. Create files
+touch index.html style.css script.js
+
+# 4. Open in browser and develop
+python -m http.server 8000  # Optional: local server
+```
+
+All activities use pure HTML/CSS/JavaScript - no build tools needed.
 
 ## Completed Activities
 
-### 1. Electron Configuration - Drag and Drop ✓
-**File**: `electron-configuration.h5p`
-**Subject**: Chemistry - Atomic Structure
-**Content Type**: H5P Drag Question
+*Activities will be listed here as they are converted to standalone format*
 
-Students build the electron configuration for Oxygen by dragging electrons into orbital diagrams while applying the Aufbau principle, Hund's rule, and Pauli exclusion principle.
-
-**Features**:
-- 8 draggable electrons with spin notation
-- 8 drop zones for 1s, 2s, and 2p orbitals
-- Immediate feedback with explanations
-- Hints for each orbital
-- Retry and show solution options
-- Differentiated feedback based on score
-
-**Documentation**: See `activities/01_chemistry_electron_config/README.md`
+**Status**: Currently revising approach from H5P packages to standalone HTML/JS applications
 
 ---
 
 ## Development Roadmap
 
-- **Phase 1**: Setup and planning (Week 1) ✓
-- **Phase 2**: Content development (Weeks 2-4) - **IN PROGRESS** (1/10 activities complete)
+- **Phase 1**: Setup and planning (Week 1) ✓ - **REVISED for standalone approach**
+- **Phase 2**: Content development (Weeks 2-4) - **RESTARTING** (0/10 activities in standalone format)
 - **Phase 3**: Testing and refinement (Week 5)
 - **Phase 4**: Documentation and deployment (Week 6)
 
@@ -149,10 +168,15 @@ All activities are designed with accessibility in mind:
 
 ## Technology Stack
 
-- **H5P Framework**: Open-source HTML5 content framework
-- **xAPI**: For learning analytics and tracking
-- **Responsive Design**: Works on desktop, tablet, and mobile
-- **LMS Integration**: Compatible with Moodle, Canvas, Blackboard, etc.
+- **HTML5**: Semantic markup, video, canvas, drag-and-drop API
+- **CSS3**: Flexbox, Grid, animations, transforms, responsive design
+- **JavaScript (ES6+)**: Vanilla JS, no frameworks required
+- **Optional Libraries**:
+  - MathJax (for mathematical equations)
+  - Chart.js or Canvas (for data visualization)
+  - Web Speech API (for audio pronunciation)
+- **No Build Tools**: Direct browser execution, no compilation needed
+- **Deployment**: Any web server, GitHub Pages, or local files
 
 ## License
 
@@ -168,10 +192,21 @@ Contributions are welcome! Please:
 
 ## Resources
 
-- [H5P Official Website](https://h5p.org)
-- [H5P Documentation](https://h5p.org/documentation)
-- [H5P Content Types](https://h5p.org/content-types-and-applications)
-- [Lumi H5P Editor](https://lumi.education)
+### Web Technologies
+- [MDN Web Docs](https://developer.mozilla.org) - HTML, CSS, JavaScript documentation
+- [HTML5 Drag and Drop API](https://developer.mozilla.org/en-US/docs/Web/API/HTML_Drag_and_Drop_API)
+- [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+- [Web Speech API](https://developer.mozilla.org/en-US/docs/Web/API/Web_Speech_API)
+
+### Inspiration (H5P and others)
+- [H5P.org](https://h5p.org) - For UX patterns and interaction design
+- [PhET Interactive Simulations](https://phet.colorado.edu) - Science and math simulations
+- [GeoGebra](https://www.geogebra.org) - Interactive mathematics
+- [Khan Academy](https://www.khanacademy.org) - Educational exercises
+
+### Accessibility
+- [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
+- [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
 
 ## Contact & Support
 
@@ -179,6 +214,7 @@ For questions about this demonstration project, please open an issue in the repo
 
 ---
 
-**Project Status**: Phase 2 - Content Development (1/10 activities complete)
+**Project Status**: Phase 1 - Planning REVISED for Standalone Approach (Ready to build!)
 **Last Updated**: 2025-11-05
-**Version**: 1.1
+**Version**: 2.0 (Standalone Edition)
+**Approach**: Pure HTML/CSS/JavaScript - No H5P platform required
