@@ -34,6 +34,7 @@ class CoordinateSystem {
         // Interaction state
         this.draggedPoint = null;
         this.hoveredPoint = null;
+        this.snapTarget = null; // Current snap target point
 
         // Pan/Zoom state
         this.isPanning = false;
@@ -59,6 +60,10 @@ class CoordinateSystem {
         this.measurementMode = null; // 'distance', 'angle', or null
         this.measurementPoints = []; // Points selected for measurement
         this.measurements = []; // Stored measurements
+
+        // Keyboard navigation
+        this.selectedPointIndex = -1; // Index of currently selected point (-1 = none)
+        this.keyboardMoveSpeed = 0.1; // World units per arrow key press
 
         // Response data
         this.responseData = {};
@@ -105,6 +110,9 @@ class CoordinateSystem {
                 // Draw measurements overlay
                 self.drawMeasurements(p);
 
+                // Draw snap feedback
+                self.drawSnapFeedback(p);
+
                 // Update mouse coordinates display
                 self.updateMouseDisplay(p);
 
@@ -130,6 +138,10 @@ class CoordinateSystem {
 
             p.mouseWheel = (event) => {
                 return self.handleMouseWheel(p, event);
+            };
+
+            p.keyPressed = () => {
+                return self.handleKeyPressed(p);
             };
         };
 
@@ -244,18 +256,19 @@ class CoordinateSystem {
             samples: config.samples || 200
         };
 
-        // Pre-calculate points for the function
-        func.points = this.calculateFunctionPoints(func);
+        // Pre-calculate segments for the function (handles discontinuities)
+        func.segments = this.calculateFunctionPoints(func);
 
         this.functions.push(func);
         this.elements.push(func);
     }
 
     /**
-     * Calculate points for a function
+     * Calculate points for a function with discontinuity detection
      */
     calculateFunctionPoints(func) {
-        const points = [];
+        const segments = []; // Array of continuous segments
+        let currentSegment = [];
         const [xStart, xEnd] = func.domain;
         const step = (xEnd - xStart) / func.samples;
 
@@ -263,21 +276,58 @@ class CoordinateSystem {
             // Use math.js for safe evaluation
             const expr = math.compile(func.expression);
 
+            let prevY = null;
+
             for (let x = xStart; x <= xEnd; x += step) {
                 try {
                     const y = expr.evaluate({ x: x });
+
                     if (typeof y === 'number' && isFinite(y)) {
-                        points.push({ x, y });
+                        // Check for discontinuity (large jump in y-value)
+                        // This detects vertical asymptotes
+                        if (prevY !== null) {
+                            const yRange = this.yMax - this.yMin;
+                            const jump = Math.abs(y - prevY);
+
+                            // If jump is more than 50% of visible range, it's likely a discontinuity
+                            if (jump > yRange * 0.5) {
+                                // Start a new segment
+                                if (currentSegment.length > 0) {
+                                    segments.push(currentSegment);
+                                    currentSegment = [];
+                                }
+                            }
+                        }
+
+                        currentSegment.push({ x, y });
+                        prevY = y;
+                    } else {
+                        // Undefined/infinite point - break the segment
+                        if (currentSegment.length > 0) {
+                            segments.push(currentSegment);
+                            currentSegment = [];
+                        }
+                        prevY = null;
                     }
                 } catch (e) {
-                    // Skip invalid points
+                    // Error evaluating at this point - break the segment
+                    if (currentSegment.length > 0) {
+                        segments.push(currentSegment);
+                        currentSegment = [];
+                    }
+                    prevY = null;
                 }
+            }
+
+            // Add final segment
+            if (currentSegment.length > 0) {
+                segments.push(currentSegment);
             }
         } catch (e) {
             console.error('Error parsing function:', func.expression, e);
         }
 
-        return points;
+        return segments;
     }
 
     /**
@@ -437,23 +487,28 @@ class CoordinateSystem {
     }
 
     /**
-     * Draw a function
+     * Draw a function (with discontinuity handling)
      */
     drawFunction(p, func) {
-        if (!func.points || func.points.length === 0) return;
+        if (!func.segments || func.segments.length === 0) return;
 
         p.push();
         p.stroke(func.color);
         p.strokeWeight(func.thickness);
         p.noFill();
 
-        p.beginShape();
-        func.points.forEach(point => {
-            const sx = this.worldToScreenX(point.x);
-            const sy = this.worldToScreenY(point.y);
-            p.vertex(sx, sy);
+        // Draw each continuous segment separately
+        func.segments.forEach(segment => {
+            if (segment.length < 2) return; // Need at least 2 points to draw
+
+            p.beginShape();
+            segment.forEach(point => {
+                const sx = this.worldToScreenX(point.x);
+                const sy = this.worldToScreenY(point.y);
+                p.vertex(sx, sy);
+            });
+            p.endShape();
         });
-        p.endShape();
 
         p.pop();
     }
@@ -604,6 +659,30 @@ class CoordinateSystem {
             p.ellipse(sx, sy, (radius + 4) * 2, (radius + 4) * 2);
         }
 
+        // Highlight if keyboard-selected (focus ring)
+        const pointIndex = this.points.indexOf(point);
+        if (pointIndex === this.selectedPointIndex) {
+            p.noFill();
+            p.stroke(0, 150, 255); // Blue focus ring
+            p.strokeWeight(3);
+            p.drawingContext.setLineDash([5, 5]); // Dashed line
+            p.ellipse(sx, sy, (radius + 6) * 2, (radius + 6) * 2);
+            p.drawingContext.setLineDash([]); // Reset
+
+            // Show keyboard hint
+            p.fill(0, 150, 255);
+            p.noStroke();
+            p.textAlign(p.CENTER, p.TOP);
+            p.textSize(10);
+            p.textStyle(p.NORMAL);
+            const hint = "Arrow keys to move";
+            const hintW = p.textWidth(hint);
+            p.fill(255, 255, 255, 230);
+            p.rect(sx - hintW/2 - 3, sy + radius + 20, hintW + 6, 14, 3);
+            p.fill(0, 150, 255);
+            p.text(hint, sx, sy + radius + 22);
+        }
+
         p.pop();
     }
 
@@ -709,8 +788,11 @@ class CoordinateSystem {
 
                 // Snap to closest point if found
                 if (closestPoint) {
+                    this.snapTarget = closestPoint; // Store for visual feedback
                     worldX = closestPoint.x;
                     worldY = closestPoint.y;
+                } else {
+                    this.snapTarget = null; // Clear if not snapping
                 }
             }
         }
@@ -780,6 +862,7 @@ class CoordinateSystem {
             // Save state to history
             this.saveState();
             this.draggedPoint = null;
+            this.snapTarget = null; // Clear snap target
         }
     }
 
@@ -843,6 +926,159 @@ class CoordinateSystem {
 
         // Return false to prevent default browser behavior
         return false;
+    }
+
+    /**
+     * Handle keyboard input for navigation
+     */
+    handleKeyPressed(p) {
+        // Tab - cycle through points
+        if (p.keyCode === p.TAB) {
+            if (p.keyIsDown(p.SHIFT)) {
+                this.selectPreviousPoint();
+            } else {
+                this.selectNextPoint();
+            }
+            return false; // Prevent default tab behavior
+        }
+
+        // Arrow keys - move selected point
+        if (this.selectedPointIndex >= 0 && this.selectedPointIndex < this.points.length) {
+            const point = this.points[this.selectedPointIndex];
+
+            if (!point.draggable) return true;
+
+            let moved = false;
+
+            if (p.keyCode === p.LEFT_ARROW) {
+                point.x -= this.keyboardMoveSpeed;
+                moved = true;
+            } else if (p.keyCode === p.RIGHT_ARROW) {
+                point.x += this.keyboardMoveSpeed;
+                moved = true;
+            } else if (p.keyCode === p.UP_ARROW) {
+                point.y += this.keyboardMoveSpeed;
+                moved = true;
+            } else if (p.keyCode === p.DOWN_ARROW) {
+                point.y -= this.keyboardMoveSpeed;
+                moved = true;
+            }
+
+            if (moved) {
+                // Apply constraints if they exist
+                this.applyConstraints(point);
+
+                // Update response data and save state
+                this.updateResponseData();
+                this.saveState();
+
+                console.log(`⌨️ Moved ${point.id} to (${point.x.toFixed(2)}, ${point.y.toFixed(2)})`);
+                return false; // Prevent default arrow key behavior
+            }
+        }
+
+        // Enter or Space - confirm/deselect
+        if (p.keyCode === p.ENTER || p.keyCode === 32) {
+            if (this.selectedPointIndex >= 0) {
+                console.log(`✓ Deselected point`);
+                this.selectedPointIndex = -1;
+                return false;
+            }
+        }
+
+        // Escape - deselect
+        if (p.keyCode === p.ESCAPE) {
+            if (this.selectedPointIndex >= 0) {
+                console.log(`⎋ Cancelled selection`);
+                this.selectedPointIndex = -1;
+                return false;
+            }
+        }
+
+        return true; // Allow other keys to work normally
+    }
+
+    /**
+     * Select next draggable point (for keyboard navigation)
+     */
+    selectNextPoint() {
+        const draggablePoints = this.points.filter(p => p.draggable);
+
+        if (draggablePoints.length === 0) return;
+
+        // Find current point in draggable list
+        let currentIndex = -1;
+        if (this.selectedPointIndex >= 0) {
+            const currentPoint = this.points[this.selectedPointIndex];
+            currentIndex = draggablePoints.indexOf(currentPoint);
+        }
+
+        // Move to next
+        const nextIndex = (currentIndex + 1) % draggablePoints.length;
+        const nextPoint = draggablePoints[nextIndex];
+
+        // Find index in main points array
+        this.selectedPointIndex = this.points.indexOf(nextPoint);
+
+        console.log(`⇥ Selected point: ${nextPoint.id}`);
+    }
+
+    /**
+     * Select previous draggable point (for keyboard navigation)
+     */
+    selectPreviousPoint() {
+        const draggablePoints = this.points.filter(p => p.draggable);
+
+        if (draggablePoints.length === 0) return;
+
+        // Find current point in draggable list
+        let currentIndex = -1;
+        if (this.selectedPointIndex >= 0) {
+            const currentPoint = this.points[this.selectedPointIndex];
+            currentIndex = draggablePoints.indexOf(currentPoint);
+        }
+
+        // Move to previous
+        const prevIndex = currentIndex <= 0 ? draggablePoints.length - 1 : currentIndex - 1;
+        const prevPoint = draggablePoints[prevIndex];
+
+        // Find index in main points array
+        this.selectedPointIndex = this.points.indexOf(prevPoint);
+
+        console.log(`⇤ Selected point: ${prevPoint.id}`);
+    }
+
+    /**
+     * Apply constraints to a point
+     */
+    applyConstraints(point) {
+        if (!point.constraints) return;
+
+        const constraints = point.constraints;
+
+        // Bounds constraint
+        if (constraints.type === 'bounds') {
+            const bounds = constraints.bounds;
+            point.x = Math.max(bounds.xMin, Math.min(bounds.xMax, point.x));
+            point.y = Math.max(bounds.yMin, Math.min(bounds.yMax, point.y));
+        }
+        // Line constraint
+        else if (constraints.type === 'line') {
+            try {
+                const expr = math.compile(constraints.expression);
+                point.y = expr.evaluate({ x: point.x });
+            } catch (e) {
+                console.error('Error applying line constraint:', e);
+            }
+        }
+        // Circle constraint
+        else if (constraints.type === 'circle') {
+            const center = constraints.center || [0, 0];
+            const radius = constraints.radius || 1;
+            const angle = Math.atan2(point.y - center[1], point.x - center[0]);
+            point.x = center[0] + radius * Math.cos(angle);
+            point.y = center[1] + radius * Math.sin(angle);
+        }
     }
 
     /**
@@ -1568,6 +1804,54 @@ class CoordinateSystem {
         p.textAlign(p.CENTER, p.CENTER);
         p.textSize(12);
         p.text(measurement.label, labelX, labelY);
+    }
+
+    /**
+     * Draw snap feedback when dragging near snap targets
+     */
+    drawSnapFeedback(p) {
+        if (!this.snapTarget || !this.draggedPoint) return;
+
+        const sx1 = this.worldToScreenX(this.draggedPoint.x);
+        const sy1 = this.worldToScreenY(this.draggedPoint.y);
+        const sx2 = this.worldToScreenX(this.snapTarget.x);
+        const sy2 = this.worldToScreenY(this.snapTarget.y);
+
+        p.push();
+
+        // Draw dashed line to snap target
+        p.stroke(0, 200, 0, 150); // Green
+        p.strokeWeight(2);
+        p.drawingContext.setLineDash([8, 4]);
+        p.line(sx1, sy1, sx2, sy2);
+        p.drawingContext.setLineDash([]);
+
+        // Highlight snap target point with pulsing effect
+        const pulseSize = 10 + Math.sin(p.frameCount * 0.15) * 3;
+        p.noFill();
+        p.stroke(0, 255, 0, 200);
+        p.strokeWeight(3);
+        p.ellipse(sx2, sy2, pulseSize * 2, pulseSize * 2);
+
+        // Inner highlight
+        p.stroke(0, 255, 0, 100);
+        p.strokeWeight(1);
+        p.ellipse(sx2, sy2, (pulseSize + 5) * 2, (pulseSize + 5) * 2);
+
+        // Show "SNAP" label
+        p.fill(0, 200, 0);
+        p.noStroke();
+        p.textAlign(p.CENTER, p.BOTTOM);
+        p.textSize(11);
+        p.textStyle(p.BOLD);
+        const snapText = `SNAP to ${this.snapTarget.label || this.snapTarget.id}`;
+        const textW = p.textWidth(snapText);
+        p.fill(255, 255, 255, 230);
+        p.rect(sx2 - textW/2 - 4, sy2 - 25, textW + 8, 16, 3);
+        p.fill(0, 200, 0);
+        p.text(snapText, sx2, sy2 - 12);
+
+        p.pop();
     }
 
     /**
