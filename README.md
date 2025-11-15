@@ -313,9 +313,6 @@ Contributions are welcome! Please:
 - [WCAG Guidelines](https://www.w3.org/WAI/WCAG21/quickref/)
 - [ARIA Authoring Practices](https://www.w3.org/WAI/ARIA/apg/)
 
-## Contact & Support
-
-For questions about this demonstration project, please open an issue in the repository.
 
 ---
 
